@@ -25,11 +25,9 @@ body[data-isday="false"]{
 
 main {
   width: 60vw;
-  user-select: none;
 }
 
 h1 {
-  margin: 10rem 0;
   font-size: 5rem;
   font-weight: bold;
   background: linear-gradient(90deg, #ecff6e, #7873f5, #4ade80);
@@ -53,7 +51,7 @@ h1 {
 
 .current-info-container {
   text-align: center;
-
+  margin-bottom: 10rem;
 }
 
 .temperature {
@@ -75,15 +73,10 @@ h1 {
 }
 
 .additional-info {
-  visibility: hidden;
-}
+  margin-bottom: 10rem;
 
-.current-info-container:hover .additional-info {
-  visibility: visible;
   font-size: 1.4rem;
   opacity: .7;
-  margin-bottom: 10rem;
-  text-align: center;
   text-shadow:
     0 1px 2px rgba(0, 0, 0, .1),
     0 2px 4px rgba(0, 0, 0, .1),
@@ -97,9 +90,4 @@ h3 {
 
 .additional-info > div > p > span {
   font-weight: 600;
-}
-
-main > section > p {
-  opacity: .7;
-  letter-spacing: .2rem;
 }
