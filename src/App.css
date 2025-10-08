@@ -10,7 +10,7 @@
 
 body {
   margin: 0;
-  max-height: 100vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
 }
@@ -84,10 +84,18 @@ h1 {
     0 8px 16px rgba(0, 0, 0, .05);
 }
 
-h3 {
+h2 {
   font-size: 2rem;
 }
 
 .additional-info > div > p > span {
   font-weight: 600;
+}
+
+table th {
+  width: 10rem;
+}
+
+table td {
+  text-align: center;
 }

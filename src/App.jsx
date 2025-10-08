@@ -17,6 +17,10 @@ export default function App() {
         longitude: data.longitude,
         currentData: data.current,
         currentUnitsData: data.current_units,
+        dailyData: data.daily,
+        dailyUnitsData: data.daily_units,
+        hourlyData: data.hourly,
+        hourlyUnitsData: data.hourly_units,
       });
       console.log(data);
       setIsLoading(false);
@@ -48,7 +52,7 @@ export default function App() {
   }
 
   if (error) {
-    return <div className="error_container">{error}</div>;
+    return <div>{error}</div>;
   }
 
   return (
@@ -65,8 +69,9 @@ export default function App() {
           </div>
         </section>
         <section className="additional-info">
-          <h3>Mother Nature’s Tantrums</h3>
+          <h2>Mother Nature’s Tantrums</h2>
           <div>
+            <h3>Current info</h3>
             <p>
               Latitude: <span>{weatherData.latitude}</span>
             </p>
@@ -90,6 +95,43 @@ export default function App() {
               Snowfall:<span> {weatherData.currentData.snowfall}</span>
               <span> {weatherData.currentUnitsData.snowfall}</span>
             </p>
+          </div>
+          <div>
+            <h3>Daily info</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Sunrise</th>
+                  <th>Sunset</th>
+                  <th>UV Index Max</th>
+                </tr>
+              </thead>
+              <tbody>
+                {weatherData.dailyData.time.map((date, index) => {
+                  return (
+                    <tr key={date}>
+                      <td>{date}</td>
+                      <td>
+                        {`${new Date(
+                          weatherData.dailyData.sunrise[index]
+                        ).getHours()}:${new Date(
+                          weatherData.dailyData.sunrise[index]
+                        ).getMinutes()}`}
+                      </td>
+                      <td>
+                        {`${new Date(
+                          weatherData.dailyData.sunset[index]
+                        ).getHours()}:${new Date(
+                          weatherData.dailyData.sunset[index]
+                        ).getMinutes()}`}
+                      </td>
+                      <td>{weatherData.dailyData.uv_index_max[index]}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </section>
       </section>
