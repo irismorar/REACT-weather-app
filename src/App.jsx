@@ -2,6 +2,36 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 export default function App() {
+  const weatherDictionary = {
+    0: "clear sky",
+    1: "mainly clear",
+    2: "partly cloudy",
+    3: "overcast",
+    45: "fog",
+    48: "depositing rime fog",
+    51: "light drizzle",
+    53: "moderate drizzle",
+    55: "dense drizzle",
+    56: "light freezing drizzle",
+    57: "dense freezing drizzle",
+    61: "slight rain",
+    63: "moderate rain",
+    65: "heavy rain",
+    66: "light freezing rain",
+    67: "heavy freezing rain",
+    71: "slight snow fall",
+    73: "moderate snow fall",
+    75: "heavy snow fall",
+    77: "snow grains",
+    80: "slight rain showers",
+    81: "moderate rain showers",
+    82: "violent rain showers",
+    85: "slight snow showers",
+    86: "heavy snow showers",
+    95: "thunderstorm",
+    96: "slight hail thunderstorm",
+    99: "heavy hail thunderstorm",
+  };
   const [weatherData, setWeatherData] = useState({});
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -9,7 +39,7 @@ export default function App() {
   const fetchWeatherData = async () => {
     try {
       const response = await fetch(
-        "https://api.open-meteo.com/v1/forecast?latitude=46.75&longitude=23.5&daily=sunrise,sunset,uv_index_max&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,rain,showers,snowfall,snow_depth,cloud_cover,visibility,wind_speed_10m&current=temperature_2m,is_day,rain,showers,snowfall,wind_speed_10m&timezone=Europe%2FBerlin"
+        "https://api.open-meteo.com/v1/forecast?latitude=46.75&longitude=23.5&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin"
       );
       const data = await response.json();
       setWeatherData({
@@ -18,6 +48,7 @@ export default function App() {
         currentData: data.current,
         currentUnitsData: data.current_units,
         dailyData: data.daily,
+        dailyUnitsData: data.daily_units,
         hourlyData: data.hourly,
         hourlyUnitsData: data.hourly_units,
       });
@@ -78,21 +109,67 @@ export default function App() {
               Longitude: <span>{weatherData.longitude}</span>
             </p>
             <p>
+              Weather:
+              <span>
+                {" "}
+                {weatherDictionary[weatherData.currentData.weather_code]}
+              </span>
+            </p>
+            <p>
+              Max temperature:
+              <span>
+                {" "}
+                {weatherData.dailyData.temperature_2m_max[0] +
+                  weatherData.dailyUnitsData.temperature_2m_max}
+              </span>
+            </p>
+            <p>
+              Min temperature:
+              <span>
+                {" "}
+                {weatherData.dailyData.temperature_2m_min[0] +
+                  weatherData.dailyUnitsData.temperature_2m_min}
+              </span>
+            </p>
+            <p>
+              UV index:
+              <span>
+                {" "}
+                {weatherData.dailyData.uv_index_max[0] +
+                  weatherData.dailyUnitsData.uv_index_max}
+              </span>
+            </p>
+            <p>
               Wind speed:
-              <span> {weatherData.currentData.wind_speed_10m}</span>
-              <span> {weatherData.currentUnitsData.wind_speed_10m}</span>
+              <span>
+                {" "}
+                {weatherData.currentData.wind_speed_10m +
+                  weatherData.currentUnitsData.wind_speed_10m}
+              </span>
             </p>
             <p>
-              Rain:<span> {weatherData.currentData.rain}</span>
-              <span> {weatherData.currentUnitsData.rain}</span>
+              Humidity:
+              <span>
+                {" "}
+                {weatherData.currentData.relative_humidity_2m +
+                  weatherData.currentUnitsData.relative_humidity_2m}
+              </span>
             </p>
             <p>
-              Showers:<span> {weatherData.currentData.showers}</span>
-              <span> {weatherData.currentUnitsData.showers}</span>
+              Air pressure:
+              <span>
+                {" "}
+                {weatherData.currentData.pressure_msl +
+                  weatherData.currentUnitsData.pressure_msl}
+              </span>
             </p>
             <p>
-              Snowfall:<span> {weatherData.currentData.snowfall}</span>
-              <span> {weatherData.currentUnitsData.snowfall}</span>
+              Feels like:
+              <span>
+                {" "}
+                {weatherData.currentData.apparent_temperature +
+                  weatherData.currentUnitsData.apparent_temperature}
+              </span>
             </p>
           </section>
           <section className="daily-container">
@@ -101,6 +178,8 @@ export default function App() {
               <thead>
                 <tr>
                   <th>Date</th>
+                  <th>Max</th>
+                  <th>Min</th>
                   <th>Sunrise</th>
                   <th>Sunset</th>
                   <th>UV index</th>
@@ -111,6 +190,14 @@ export default function App() {
                   return (
                     <tr key={date}>
                       <td>{date}</td>
+                      <td>
+                        {weatherData.dailyData.temperature_2m_max[index] +
+                          weatherData.dailyUnitsData.temperature_2m_max}
+                      </td>
+                      <td>
+                        {weatherData.dailyData.temperature_2m_min[index] +
+                          weatherData.dailyUnitsData.temperature_2m_min}
+                      </td>
                       <td>
                         {`${new Date(
                           weatherData.dailyData.sunrise[index]
@@ -139,16 +226,7 @@ export default function App() {
                 <tr>
                   <th>Time</th>
                   <th>Temperature</th>
-                  <th>Apparent temperature</th>
                   <th>Visibility</th>
-                  <th>Wind speed</th>
-                  <th>Humidity</th>
-                  <th>Precipitation probability</th>
-                  <th>Cloud cover</th>
-                  <th>Rain</th>
-                  <th>Showers</th>
-                  <th>Snowfall</th>
-                  <th>Snow depth</th>
                 </tr>
               </thead>
               <tbody>
@@ -161,46 +239,8 @@ export default function App() {
                           weatherData.hourlyUnitsData.temperature_2m}
                       </td>
                       <td>
-                        {weatherData.hourlyData.apparent_temperature[index] +
-                          weatherData.hourlyUnitsData.apparent_temperature}
-                      </td>
-                      <td>
                         {weatherData.hourlyData.visibility[index] +
                           weatherData.hourlyUnitsData.visibility}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.wind_speed_10m[index] +
-                          weatherData.hourlyUnitsData.wind_speed_10m}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.relative_humidity_2m[index] +
-                          weatherData.hourlyUnitsData.relative_humidity_2m}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.precipitation_probability[
-                          index
-                        ] +
-                          weatherData.hourlyUnitsData.precipitation_probability}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.cloud_cover[index] +
-                          weatherData.hourlyUnitsData.cloud_cover}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.rain[index] +
-                          weatherData.hourlyUnitsData.rain}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.showers[index] +
-                          weatherData.hourlyUnitsData.showers}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.snowfall[index] +
-                          weatherData.hourlyUnitsData.snowfall}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.snow_depth[index] +
-                          weatherData.hourlyUnitsData.snow_depth}
                       </td>
                     </tr>
                   );
