@@ -116,6 +116,23 @@ export default function App() {
           </div>
         </section>
 
+        <section className="hourly-container">
+          <section>
+            {weatherData.hourlyData.time.slice(0, 24).map((time, index) => {
+              return (
+                <div className="hourly-data-container" key={time}>
+                  <div>{time.slice(-5)}</div>
+                  <div>logo</div>
+                  <div>
+                    {weatherData.hourlyData.temperature_2m[index] +
+                      weatherData.hourlyUnitsData.temperature_2m}
+                  </div>
+                </div>
+              );
+            })}
+          </section>
+        </section>
+
         <section className="daily-container">
           <table>
             <tbody>
@@ -187,52 +204,24 @@ export default function App() {
           </div>
         </section>
         <section className="sun-position-container">
-          <span>
-            Sunrise:{" "}
-            {`${new Date(
+          <div>
+            <div>logo</div>
+            <div>Sunrise</div>
+            <div>{`${new Date(
               weatherData.dailyData.sunrise[0]
             ).getHours()}:${new Date(
               weatherData.dailyData.sunrise[0]
-            ).getMinutes()}`}{" "}
-          </span>
-          <span>
-            Sunset:{" "}
-            {`${new Date(
+            ).getMinutes()}`}</div>
+          </div>
+          <div>
+            <div>logo</div>
+            <div>Sunset</div>
+            <div>{`${new Date(
               weatherData.dailyData.sunset[0]
             ).getHours()}:${new Date(
               weatherData.dailyData.sunset[0]
-            ).getMinutes()}`}
-          </span>
-        </section>
-
-        <section className="hourly-container">
-          <h3>Hourly info</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Temperature</th>
-                <th>Visibility</th>
-              </tr>
-            </thead>
-            <tbody>
-              {weatherData.hourlyData.time.map((time, index) => {
-                return (
-                  <tr key={time}>
-                    <td>{time.replace("T", " ")}</td>
-                    <td>
-                      {weatherData.hourlyData.temperature_2m[index] +
-                        weatherData.hourlyUnitsData.temperature_2m}
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.visibility[index] +
-                        weatherData.hourlyUnitsData.visibility}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+            ).getMinutes()}`}</div>
+          </div>
         </section>
       </section>
     </main>
