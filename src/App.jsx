@@ -97,157 +97,142 @@ export default function App() {
           <div className="time">
             {weatherData.currentData.time.replace("T", " ")}
           </div>
+          <div>
+            <span>
+              {weatherDictionary[weatherData.currentData.weather_code]}
+            </span>
+            <span>
+              {" "}
+              {weatherData.dailyData.temperature_2m_max[0] +
+                weatherData.dailyUnitsData.temperature_2m_max}
+              {" / "}
+              {weatherData.dailyData.temperature_2m_min[0] +
+                weatherData.dailyUnitsData.temperature_2m_min}
+            </span>
+          </div>
+          <div>
+            Latitude: <span>{weatherData.latitude} </span>
+            Longitude: <span> {weatherData.longitude}</span>
+          </div>
         </section>
+
+        <section className="daily-container">
+          <table>
+            <tbody>
+              {weatherData.dailyData.time.map((date, index) => {
+                return (
+                  <tr key={date}>
+                    <td>{date}</td>
+                    <td>
+                      {
+                        weatherDictionary[
+                          weatherData.dailyData.weather_code[index]
+                        ]
+                      }
+                    </td>
+                    <td>
+                      {weatherData.dailyData.temperature_2m_max[index] +
+                        weatherData.dailyUnitsData.temperature_2m_max}
+                      {" / "}
+                      {weatherData.dailyData.temperature_2m_min[index] +
+                        weatherData.dailyUnitsData.temperature_2m_min}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </section>
+
         <section className="additional-info">
-          <h2>Mother Nature’s Tantrums</h2>
-          <section className="current-container">
-            <h3>Current info</h3>
-            <p>
-              Latitude: <span>{weatherData.latitude}</span>
-            </p>
-            <p>
-              Longitude: <span>{weatherData.longitude}</span>
-            </p>
-            <p>
-              Weather:
-              <span>
-                {" "}
-                {weatherDictionary[weatherData.currentData.weather_code]}
-              </span>
-            </p>
-            <p>
-              Max temperature:
-              <span>
-                {" "}
-                {weatherData.dailyData.temperature_2m_max[0] +
-                  weatherData.dailyUnitsData.temperature_2m_max}
-              </span>
-            </p>
-            <p>
-              Min temperature:
-              <span>
-                {" "}
-                {weatherData.dailyData.temperature_2m_min[0] +
-                  weatherData.dailyUnitsData.temperature_2m_min}
-              </span>
-            </p>
-            <p>
-              UV index:
-              <span>
-                {" "}
-                {weatherData.dailyData.uv_index_max[0] +
-                  weatherData.dailyUnitsData.uv_index_max}
-              </span>
-            </p>
-            <p>
-              Wind speed:
-              <span>
-                {" "}
-                {weatherData.currentData.wind_speed_10m +
-                  weatherData.currentUnitsData.wind_speed_10m}
-              </span>
-            </p>
-            <p>
-              Humidity:
-              <span>
-                {" "}
-                {weatherData.currentData.relative_humidity_2m +
-                  weatherData.currentUnitsData.relative_humidity_2m}
-              </span>
-            </p>
-            <p>
-              Air pressure:
-              <span>
-                {" "}
-                {weatherData.currentData.pressure_msl +
-                  weatherData.currentUnitsData.pressure_msl}
-              </span>
-            </p>
-            <p>
-              Feels like:
-              <span>
-                {" "}
-                {weatherData.currentData.apparent_temperature +
-                  weatherData.currentUnitsData.apparent_temperature}
-              </span>
-            </p>
-          </section>
-          <section className="daily-container">
-            <h3>Daily info</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Max</th>
-                  <th>Min</th>
-                  <th>Sunrise</th>
-                  <th>Sunset</th>
-                  <th>UV index</th>
-                </tr>
-              </thead>
-              <tbody>
-                {weatherData.dailyData.time.map((date, index) => {
-                  return (
-                    <tr key={date}>
-                      <td>{date}</td>
-                      <td>
-                        {weatherData.dailyData.temperature_2m_max[index] +
-                          weatherData.dailyUnitsData.temperature_2m_max}
-                      </td>
-                      <td>
-                        {weatherData.dailyData.temperature_2m_min[index] +
-                          weatherData.dailyUnitsData.temperature_2m_min}
-                      </td>
-                      <td>
-                        {`${new Date(
-                          weatherData.dailyData.sunrise[index]
-                        ).getHours()}:${new Date(
-                          weatherData.dailyData.sunrise[index]
-                        ).getMinutes()}`}
-                      </td>
-                      <td>
-                        {`${new Date(
-                          weatherData.dailyData.sunset[index]
-                        ).getHours()}:${new Date(
-                          weatherData.dailyData.sunset[index]
-                        ).getMinutes()}`}
-                      </td>
-                      <td>{weatherData.dailyData.uv_index_max[index]}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </section>
-          <section className="hourly-container">
-            <h3>Hourly info</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Temperature</th>
-                  <th>Visibility</th>
-                </tr>
-              </thead>
-              <tbody>
-                {weatherData.hourlyData.time.map((time, index) => {
-                  return (
-                    <tr key={time}>
-                      <td>{time.replace("T", " ")}</td>
-                      <td>
-                        {weatherData.hourlyData.temperature_2m[index] +
-                          weatherData.hourlyUnitsData.temperature_2m}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.visibility[index] +
-                          weatherData.hourlyUnitsData.visibility}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </section>
+          <div>
+            <div>logo</div>
+            <div>UV index</div>
+            <div>
+              {weatherData.dailyData.uv_index_max[0] +
+                weatherData.dailyUnitsData.uv_index_max}
+            </div>
+          </div>
+          <div>
+            <div>logo</div>
+            <div>Feels like</div>
+            <div>
+              {weatherData.currentData.apparent_temperature +
+                weatherData.currentUnitsData.apparent_temperature}
+            </div>
+          </div>
+          <div>
+            <div>logo</div>
+            <div>Humidity</div>
+            <div>
+              {weatherData.currentData.relative_humidity_2m +
+                weatherData.currentUnitsData.relative_humidity_2m}
+            </div>
+          </div>
+          <div>
+            <div>logo</div>
+            <div>Wind speed</div>
+            <div>
+              {weatherData.currentData.wind_speed_10m +
+                weatherData.currentUnitsData.wind_speed_10m}
+            </div>
+          </div>
+          <div>
+            <div>logo</div>
+            <div>Air pressure</div>
+            <div>
+              {weatherData.currentData.pressure_msl +
+                weatherData.currentUnitsData.pressure_msl}
+            </div>
+          </div>
+        </section>
+        <section className="sun-position-container">
+          <span>
+            Sunrise:{" "}
+            {`${new Date(
+              weatherData.dailyData.sunrise[0]
+            ).getHours()}:${new Date(
+              weatherData.dailyData.sunrise[0]
+            ).getMinutes()}`}{" "}
+          </span>
+          <span>
+            Sunset:{" "}
+            {`${new Date(
+              weatherData.dailyData.sunset[0]
+            ).getHours()}:${new Date(
+              weatherData.dailyData.sunset[0]
+            ).getMinutes()}`}
+          </span>
+        </section>
+
+        <section className="hourly-container">
+          <h3>Hourly info</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Temperature</th>
+                <th>Visibility</th>
+              </tr>
+            </thead>
+            <tbody>
+              {weatherData.hourlyData.time.map((time, index) => {
+                return (
+                  <tr key={time}>
+                    <td>{time.replace("T", " ")}</td>
+                    <td>
+                      {weatherData.hourlyData.temperature_2m[index] +
+                        weatherData.hourlyUnitsData.temperature_2m}
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.visibility[index] +
+                        weatherData.hourlyUnitsData.visibility}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </section>
       </section>
     </main>
