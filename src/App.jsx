@@ -1,37 +1,145 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import {
+  Sunrise,
+  Sunset,
+  Sun,
+  Cloud,
+  CloudSun,
+  Cloudy,
+  CloudFog,
+  CloudDrizzle,
+  CloudHail,
+  CloudSnow,
+  CloudRain,
+  CloudRainWind,
+  Snowflake,
+  SunSnow,
+  CloudLightning,
+  Zap,
+  SunDim,
+  Droplet,
+  Thermometer,
+  Wind,
+  WindArrowDown,
+} from "lucide-react";
+
+const weatherDictionary = {
+  0: {
+    name: "clear sky",
+    icon: <Sun />,
+  },
+  1: {
+    name: "mainly clear",
+    icon: <CloudSun />,
+  },
+  2: {
+    name: "partly cloudy",
+    icon: <Cloud />,
+  },
+  3: {
+    name: "overcast",
+    icon: <Cloudy />,
+  },
+  45: {
+    name: "fog",
+    icon: <CloudFog />,
+  },
+  48: {
+    name: "depositing rime fog",
+    icon: <CloudFog />,
+  },
+  51: {
+    name: "light drizzle",
+    icon: <CloudDrizzle />,
+  },
+  53: {
+    name: "moderate drizzle",
+    icon: <CloudDrizzle />,
+  },
+  55: {
+    name: "dense drizzle",
+    icon: <CloudHail />,
+  },
+  56: {
+    name: "light freezing drizzle",
+    icon: <CloudSnow />,
+  },
+  57: {
+    name: "dense freezing drizzle",
+    icon: <CloudSnow />,
+  },
+  61: {
+    name: "slight rain",
+    icon: <CloudRain />,
+  },
+  63: {
+    name: "moderate rain",
+    icon: <CloudRain />,
+  },
+  65: {
+    name: "heavy rain",
+    icon: <CloudRainWind />,
+  },
+  66: {
+    name: "light freezing rain",
+    icon: <CloudSnow />,
+  },
+  67: {
+    name: "heavy freezing rain",
+    icon: <CloudSnow />,
+  },
+  71: {
+    name: "slight snow fall",
+    icon: <SunSnow />,
+  },
+  73: {
+    name: "moderate snow fall",
+    icon: <Snowflake />,
+  },
+  75: {
+    name: "heavy snow fall",
+    icon: <Snowflake />,
+  },
+  77: {
+    name: "snow grains",
+    icon: <CloudSnow />,
+  },
+  80: {
+    name: "slight rain showers",
+    icon: <CloudRain />,
+  },
+  81: {
+    name: "moderate rain showers",
+    icon: <CloudRain />,
+  },
+  82: {
+    name: "violent rain showers",
+    icon: <CloudRainWind />,
+  },
+  85: {
+    name: "slight snow showers",
+    icon: <SunSnow />,
+  },
+  86: {
+    name: "heavy snow showers",
+    icon: <Snowflake />,
+  },
+  95: {
+    name: "thunderstorm",
+    icon: <Zap />,
+  },
+  96: {
+    name: "slight hail thunderstorm",
+    icon: <CloudLightning />,
+  },
+  99: {
+    name: "heavy hail thunderstorm",
+    icon: <Zap />,
+  },
+};
 
 export default function App() {
-  const weatherDictionary = {
-    0: "clear sky",
-    1: "mainly clear",
-    2: "partly cloudy",
-    3: "overcast",
-    45: "fog",
-    48: "depositing rime fog",
-    51: "light drizzle",
-    53: "moderate drizzle",
-    55: "dense drizzle",
-    56: "light freezing drizzle",
-    57: "dense freezing drizzle",
-    61: "slight rain",
-    63: "moderate rain",
-    65: "heavy rain",
-    66: "light freezing rain",
-    67: "heavy freezing rain",
-    71: "slight snow fall",
-    73: "moderate snow fall",
-    75: "heavy snow fall",
-    77: "snow grains",
-    80: "slight rain showers",
-    81: "moderate rain showers",
-    82: "violent rain showers",
-    85: "slight snow showers",
-    86: "heavy snow showers",
-    95: "thunderstorm",
-    96: "slight hail thunderstorm",
-    99: "heavy hail thunderstorm",
-  };
   const [weatherData, setWeatherData] = useState({});
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -99,7 +207,7 @@ export default function App() {
           </div>
           <div>
             <span>
-              {weatherDictionary[weatherData.currentData.weather_code]}
+              {weatherDictionary[weatherData.currentData.weather_code].name}
             </span>
             <span>
               {" "}
@@ -122,7 +230,12 @@ export default function App() {
               return (
                 <div className="hourly-data-container" key={time}>
                   <div>{time.slice(-5)}</div>
-                  <div>logo</div>
+                  <div>
+                    {
+                      weatherDictionary[weatherData.currentData.weather_code]
+                        .icon
+                    }
+                  </div>
                   <div>
                     {weatherData.hourlyData.temperature_2m[index] +
                       weatherData.hourlyUnitsData.temperature_2m}
@@ -144,7 +257,7 @@ export default function App() {
                       {
                         weatherDictionary[
                           weatherData.dailyData.weather_code[index]
-                        ]
+                        ].icon
                       }
                     </td>
                     <td>
@@ -163,7 +276,7 @@ export default function App() {
 
         <section className="additional-info">
           <div>
-            <div>logo</div>
+            <SunDim />
             <div>UV index</div>
             <div>
               {weatherData.dailyData.uv_index_max[0] +
@@ -171,7 +284,7 @@ export default function App() {
             </div>
           </div>
           <div>
-            <div>logo</div>
+            <Thermometer />
             <div>Feels like</div>
             <div>
               {weatherData.currentData.apparent_temperature +
@@ -179,7 +292,7 @@ export default function App() {
             </div>
           </div>
           <div>
-            <div>logo</div>
+            <Droplet />
             <div>Humidity</div>
             <div>
               {weatherData.currentData.relative_humidity_2m +
@@ -187,7 +300,7 @@ export default function App() {
             </div>
           </div>
           <div>
-            <div>logo</div>
+            <Wind />
             <div>Wind speed</div>
             <div>
               {weatherData.currentData.wind_speed_10m +
@@ -195,7 +308,7 @@ export default function App() {
             </div>
           </div>
           <div>
-            <div>logo</div>
+            <WindArrowDown />
             <div>Air pressure</div>
             <div>
               {weatherData.currentData.pressure_msl +
@@ -205,7 +318,7 @@ export default function App() {
         </section>
         <section className="sun-position-container">
           <div>
-            <div>logo</div>
+            <Sunrise />
             <div>Sunrise</div>
             <div>{`${new Date(
               weatherData.dailyData.sunrise[0]
@@ -214,7 +327,7 @@ export default function App() {
             ).getMinutes()}`}</div>
           </div>
           <div>
-            <div>logo</div>
+            <Sunset />
             <div>Sunset</div>
             <div>{`${new Date(
               weatherData.dailyData.sunset[0]
