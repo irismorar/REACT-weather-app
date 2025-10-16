@@ -22,6 +22,7 @@ import {
   Thermometer,
   Wind,
   WindArrowDown,
+  Eye,
 } from "lucide-react";
 
 const weatherDictionary = {
@@ -193,6 +194,10 @@ export default function App() {
     return <div>{error}</div>;
   }
 
+  const indexOfCurrentHour = weatherData.hourlyData.time
+    .slice(0, 24)
+    .findIndex((item) => new Date().getHours() === new Date(item).getHours());
+
   return (
     <main>
       <h1>Thunder Buddy</h1>
@@ -313,6 +318,14 @@ export default function App() {
             <div>
               {weatherData.currentData.pressure_msl +
                 weatherData.currentUnitsData.pressure_msl}
+            </div>
+          </div>
+          <div>
+            <Eye />
+            <div>Visibility</div>
+            <div>
+              {weatherData.hourlyData.visibility[indexOfCurrentHour] +
+                weatherData.hourlyUnitsData.visibility}
             </div>
           </div>
         </section>

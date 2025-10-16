@@ -122,17 +122,16 @@ table td {
 .additional-info {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 3rem;
+  justify-content: space-between;
   margin-bottom: 5rem;
 }
 
 .additional-info > div {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  width: 15rem;
-  height: 12rem;
+  justify-content: center;
+  width: 12rem;
+  height: 10rem;
   padding: 1.5rem 2rem;
   border-radius: 20px;
   background-color: rgba(24, 37, 74, 0.4);
