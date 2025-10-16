@@ -196,7 +196,15 @@ export default function App() {
 
   const indexOfCurrentHour = weatherData.hourlyData.time
     .slice(0, 24)
-    .findIndex((item) => new Date().getHours() === new Date(item).getHours());
+    .findIndex(
+      (itemIndex) => new Date().getHours() === new Date(itemIndex).getHours()
+    );
+
+  const startIndex = indexOfCurrentHour !== -1 ? indexOfCurrentHour : 0;
+  const next24Hours = weatherData.hourlyData.time.slice(
+    startIndex,
+    startIndex + 24
+  );
 
   return (
     <main>
@@ -231,7 +239,7 @@ export default function App() {
 
         <section className="hourly-container">
           <section>
-            {weatherData.hourlyData.time.slice(0, 24).map((time, index) => {
+            {next24Hours.map((time, index) => {
               return (
                 <div className="hourly-data-container" key={time}>
                   <div>{time.slice(-5)}</div>
