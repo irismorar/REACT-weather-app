@@ -24,7 +24,7 @@ body[data-isday="false"]{
 }
 
 main {
-  width: 50vw;
+  width: 60vw;
 }
 
 h1 {
@@ -104,21 +104,15 @@ h1 {
   font-size: 1.4rem;
 }
 
-table td {
-  text-align: center;
-  width: 25rem;
-}
-
-.daily-container table {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.daily-container > table {
   margin-bottom: 5rem;
   border-radius: 20px;
   padding: 1.5rem 2rem;
   background-color: rgba(24, 37, 74, 0.4);
+  table-layout: fixed;
+  width: 100%;
+  text-align: center;
 }
-
 .additional-info {
   display: flex;
   align-items: center;
@@ -130,7 +124,7 @@ table td {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 12rem;
+  width: 15rem;
   height: 10rem;
   padding: 1.5rem 2rem;
   border-radius: 20px;
@@ -151,6 +145,7 @@ table td {
   border-radius: 20px;
   gap: 20rem;
   background-color: rgba(24, 37, 74, 0.4);
+  margin-bottom: 5rem;
 }
 .sun-position-container div {
   display: flex;
@@ -163,3 +158,51 @@ table td {
   opacity: .7;
   font-size: 1.4rem;
 }
+
+button {
+  background-color: transparent;
+  padding: .5rem 1rem;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+.details-menu-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+}
+
+.details-menu-container > div:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.details-table {
+  text-align: center;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.details-table th {
+  border: 1px solid hsla(0, 0%, 100%, .3);
+  color: hsla(0, 0%, 100%, .5);
+  font-size: 1.4rem;
+}
+
+.details-table td {
+  color: hsla(0, 0%, 100%, .3);
+  font-size: 1.4rem;
+}
+
+.details-table > tbody > tr:hover {
+  background-color: hsla(0, 0%, 100%, .2);
+}
+
+.details-table > tbody > tr:hover td {
+  color: #222;
+  font-size: 1.6rem;
+}
+

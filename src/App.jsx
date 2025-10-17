@@ -140,15 +140,32 @@ const weatherDictionary = {
   },
 };
 
+const monthName = {
+  1: "January",
+  2: "February",
+  3: "March",
+  4: "April",
+  5: "May",
+  6: "June",
+  7: "July",
+  8: "August",
+  9: "September",
+  10: "October",
+  11: "November",
+  12: "December",
+};
+
 export default function App() {
   const [weatherData, setWeatherData] = useState({});
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showTable, setShowTable] = useState(null);
 
   const fetchWeatherData = async () => {
     try {
       const response = await fetch(
-        "https://api.open-meteo.com/v1/forecast?latitude=46.75&longitude=23.5&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin"
+        "https://api.open-meteo.com/v1/forecast?latitude=46.75&longitude=23.5&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility,relative_humidity_2m,apparent_temperature,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin"
       );
       const data = await response.json();
       setWeatherData({
@@ -204,6 +221,16 @@ export default function App() {
   const next24Hours = weatherData.hourlyData.time.slice(
     startIndex,
     startIndex + 24
+  );
+
+  const handleShowDetails = () => {
+    setShowDetails((prev) => !prev);
+  };
+
+  const selectedDateFirstHourIndex = weatherData.hourlyData.time.findIndex(
+    (date) => {
+      return new Date(showTable).getDate() === new Date(date).getDate();
+    }
   );
 
   return (
@@ -265,7 +292,10 @@ export default function App() {
               {weatherData.dailyData.time.map((date, index) => {
                 return (
                   <tr key={date}>
-                    <td>{date}</td>
+                    <td>
+                      {new Date(date).getDate()}{" "}
+                      {monthName[new Date(date).getMonth() + 1]}
+                    </td>
                     <td>
                       {
                         weatherDictionary[
@@ -357,6 +387,117 @@ export default function App() {
             ).getMinutes()}`}</div>
           </div>
         </section>
+        <button onClick={handleShowDetails}>Show details</button>
+        {showDetails && (
+          <section className="details-menu-container">
+            {weatherData.dailyData.time.map((date) => {
+              return (
+                <div
+                  key={date}
+                  onClick={() => {
+                    setShowTable(date);
+                  }}
+                >
+                  {new Date(date).getDate()}{" "}
+                  {monthName[new Date(date).getMonth() + 1]}
+                </div>
+              );
+            })}
+          </section>
+        )}
+        {showDetails && showTable !== null && (
+          <table className="details-table">
+            <thead>
+              <tr>
+                <th>Hour</th>
+                <th>Weather</th>
+                <th>Temp.</th>
+                <th>Apparent temp.</th>
+                <th>Rain</th>
+                <th>Showers</th>
+                <th>Snowfall</th>
+                <th>Relative humidity</th>
+                <th>Wind speed</th>
+                <th>Wind direction</th>
+                <th>Air pressure</th>
+                <th>Visibility</th>
+              </tr>
+            </thead>
+            <tbody>
+              {weatherData.hourlyData.time
+                .slice(
+                  selectedDateFirstHourIndex,
+                  selectedDateFirstHourIndex + 24
+                )
+                .map((time, index) => {
+                  return (
+                    <tr key={crypto.randomUUID()}>
+                      <td>{new Date(time).getHours()}</td>
+                      <td>
+                        {
+                          weatherDictionary[
+                            weatherData.hourlyData.weather_code[
+                              selectedDateFirstHourIndex + index
+                            ]
+                          ].icon
+                        }
+                      </td>
+                      <td>
+                        {weatherData.hourlyData.temperature_2m[
+                          selectedDateFirstHourIndex + index
+                        ] + weatherData.hourlyUnitsData.temperature_2m}
+                      </td>
+                      <td>
+                        {weatherData.hourlyData.apparent_temperature[
+                          selectedDateFirstHourIndex + index
+                        ] + weatherData.hourlyUnitsData.apparent_temperature}
+                      </td>
+                      <td>
+                        {weatherData.hourlyData.rain[
+                          selectedDateFirstHourIndex + index
+                        ] + weatherData.hourlyUnitsData.rain}
+                      </td>
+                      <td>
+                        {weatherData.hourlyData.showers[
+                          selectedDateFirstHourIndex + index
+                        ] + weatherData.hourlyUnitsData.showers}
+                      </td>
+                      <td>
+                        {weatherData.hourlyData.snowfall[
+                          selectedDateFirstHourIndex + index
+                        ] + weatherData.hourlyUnitsData.snowfall}
+                      </td>
+                      <td>
+                        {weatherData.hourlyData.relative_humidity_2m[
+                          selectedDateFirstHourIndex + index
+                        ] + weatherData.hourlyUnitsData.relative_humidity_2m}
+                      </td>
+                      <td>
+                        {weatherData.hourlyData.wind_speed_10m[
+                          selectedDateFirstHourIndex + index
+                        ] + weatherData.hourlyUnitsData.wind_speed_10m}
+                      </td>
+                      <td>
+                        {weatherData.hourlyData.wind_direction_10m[
+                          selectedDateFirstHourIndex + index
+                        ] + weatherData.hourlyUnitsData.wind_direction_10m}
+                      </td>
+                      <td>
+                        {weatherData.hourlyData.pressure_msl[
+                          selectedDateFirstHourIndex + index
+                        ] + weatherData.hourlyUnitsData.pressure_msl}
+                      </td>
+                      <td>
+                        {weatherData.hourlyData.visibility[
+                          selectedDateFirstHourIndex + index
+                        ] + weatherData.hourlyUnitsData.visibility}
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        )}
       </section>
     </main>
   );
