@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import "./App.css";
 import {
   Sunrise,
@@ -161,16 +161,18 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
   const [showTable, setShowTable] = useState(null);
+  const [position, setPosition] = useState({});
 
-  const fetchWeatherData = async () => {
+  const fetchWeatherData = useCallback(async () => {
+    if (position.latitude === undefined || position.longitude === undefined) {
+      return;
+    }
     try {
       const response = await fetch(
-        "https://api.open-meteo.com/v1/forecast?latitude=46.75&longitude=23.5&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility,relative_humidity_2m,apparent_temperature,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin"
+        `https://api.open-meteo.com/v1/forecast?latitude=${position.latitude}&longitude=${position.longitude}&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility,relative_humidity_2m,apparent_temperature,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin`
       );
       const data = await response.json();
       setWeatherData({
-        latitude: data.latitude,
-        longitude: data.longitude,
         currentData: data.current,
         currentUnitsData: data.current_units,
         dailyData: data.daily,
@@ -185,11 +187,11 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [position.latitude, position.longitude]);
 
   useEffect(() => {
     fetchWeatherData();
-  }, []);
+  }, [fetchWeatherData]);
 
   useEffect(() => {
     if (weatherData.currentData?.is_day !== 0) {
@@ -202,6 +204,20 @@ export default function App() {
       document.body.removeAttribute("data-isday");
     };
   }, [weatherData.currentData?.is_day]);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setPosition({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      },
+      (errorMessage) => {
+        console.log(errorMessage);
+      }
+    );
+  }, []);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -259,8 +275,8 @@ export default function App() {
             </span>
           </div>
           <div>
-            Latitude: <span>{weatherData.latitude} </span>
-            Longitude: <span> {weatherData.longitude}</span>
+            Latitude: <span>{position.latitude} </span>
+            Longitude: <span> {position.longitude}</span>
           </div>
         </section>
 
@@ -289,7 +305,7 @@ export default function App() {
         <section className="daily-container">
           <table>
             <tbody>
-              {weatherData.dailyData.time.map((date, index) => {
+              {weatherData.dailyData.time.slice(1, 6).map((date, index) => {
                 return (
                   <tr key={date}>
                     <td>
