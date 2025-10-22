@@ -160,7 +160,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
-  const [showTable, setShowTable] = useState(null);
+  const [specificDateData, setSpecificDateData] = useState(null);
   const [currentPosition, setCurrentPosition] = useState({});
   const [deviceLocation, setDeviceLocation] = useState({});
 
@@ -272,7 +272,7 @@ export default function App() {
 
   const selectedDateFirstHourIndex = weatherData.hourlyData.time.findIndex(
     (date) => {
-      return new Date(showTable).getDate() === new Date(date).getDate();
+      return new Date(specificDateData).getDate() === new Date(date).getDate();
     }
   );
 
@@ -439,7 +439,7 @@ export default function App() {
                 <div
                   key={date}
                   onClick={() => {
-                    setShowTable(date);
+                    setSpecificDateData(date);
                   }}
                 >
                   {new Date(date).getDate()}{" "}
@@ -449,7 +449,7 @@ export default function App() {
             })}
           </section>
         )}
-        {showDetails && showTable !== null && (
+        {showDetails && specificDateData !== null && (
           <table className="details-table">
             <thead>
               <tr>
