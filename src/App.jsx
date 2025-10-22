@@ -406,8 +406,8 @@ export default function App() {
             <Eye />
             <div>Visibility</div>
             <div>
-              {weatherData.hourlyData.visibility[indexOfCurrentHour] +
-                weatherData.hourlyUnitsData.visibility}
+              {weatherData.hourlyData.visibility[indexOfCurrentHour] / 1000 +
+                "km"}
             </div>
           </div>
         </section>
@@ -534,7 +534,9 @@ export default function App() {
                       <td>
                         {weatherData.hourlyData.visibility[
                           selectedDateFirstHourIndex + index
-                        ] + weatherData.hourlyUnitsData.visibility}
+                        ] /
+                          1000 +
+                          "km"}
                       </td>
                     </tr>
                   );
