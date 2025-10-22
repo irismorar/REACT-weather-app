@@ -161,15 +161,19 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
   const [showTable, setShowTable] = useState(null);
-  const [position, setPosition] = useState({});
+  const [currentPosition, setCurrentPosition] = useState({});
+  const [deviceLocation, setDeviceLocation] = useState({});
 
   const fetchWeatherData = useCallback(async () => {
-    if (position.latitude === undefined || position.longitude === undefined) {
+    if (
+      currentPosition.latitude === undefined ||
+      currentPosition.longitude === undefined
+    ) {
       return;
     }
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${position.latitude}&longitude=${position.longitude}&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility,relative_humidity_2m,apparent_temperature,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin`
+        `https://api.open-meteo.com/v1/forecast?latitude=${currentPosition.latitude}&longitude=${currentPosition.longitude}&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility,relative_humidity_2m,apparent_temperature,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin`
       );
       const data = await response.json();
       setWeatherData({
@@ -180,18 +184,40 @@ export default function App() {
         hourlyData: data.hourly,
         hourlyUnitsData: data.hourly_units,
       });
-      console.log(data);
       setIsLoading(false);
     } catch (errorObject) {
       setError(`⚠️ Could not load weather data. ${errorObject.message}`);
     } finally {
       setIsLoading(false);
     }
-  }, [position.latitude, position.longitude]);
+  }, [currentPosition.latitude, currentPosition.longitude]);
+
+  const fetchLocation = useCallback(async () => {
+    if (
+      currentPosition.latitude === undefined ||
+      currentPosition.longitude === undefined
+    ) {
+      return;
+    }
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}&format=json`
+      );
+      const data = await response.json();
+      setDeviceLocation({
+        country: data.address.country,
+        county: data.address.county,
+        village: data.address.village,
+      });
+    } catch (errorObj) {
+      setError(`⚠️ Could not load position data. ${errorObj.message}`);
+    }
+  }, [currentPosition.latitude, currentPosition.longitude]);
 
   useEffect(() => {
     fetchWeatherData();
-  }, [fetchWeatherData]);
+    fetchLocation();
+  }, [fetchWeatherData, fetchLocation]);
 
   useEffect(() => {
     if (weatherData.currentData?.is_day !== 0) {
@@ -208,14 +234,15 @@ export default function App() {
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setPosition({
+        setCurrentPosition({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
       },
       (errorMessage) => {
         console.log(errorMessage);
-      }
+      },
+      { enableHighAccuracy: true }
     );
   }, []);
 
@@ -275,8 +302,9 @@ export default function App() {
             </span>
           </div>
           <div>
-            Latitude: <span>{position.latitude} </span>
-            Longitude: <span> {position.longitude}</span>
+            <span>
+              {`${deviceLocation.village}, ${deviceLocation.county}, ${deviceLocation.country}`}
+            </span>
           </div>
         </section>
 
