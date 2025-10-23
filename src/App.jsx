@@ -155,6 +155,16 @@ const monthName = {
   12: "December",
 };
 
+const dayName = {
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday",
+  7: "Sunday",
+};
+
 export default function App() {
   const [weatherData, setWeatherData] = useState({});
   const [error, setError] = useState(null);
@@ -184,6 +194,7 @@ export default function App() {
         hourlyData: data.hourly,
         hourlyUnitsData: data.hourly_units,
       });
+      console.log(data);
       setIsLoading(false);
     } catch (errorObject) {
       setError(`⚠️ Could not load weather data. ${errorObject.message}`);
@@ -207,7 +218,7 @@ export default function App() {
       setDeviceLocation({
         country: data.address.country,
         county: data.address.county,
-        village: data.address.village,
+        locality: data.address.village || data.address.city,
       });
     } catch (errorObj) {
       setError(`⚠️ Could not load position data. ${errorObj.message}`);
@@ -276,35 +287,73 @@ export default function App() {
     }
   );
 
+  const sunsetMinutes =
+    new Date(weatherData.dailyData.sunset[0]).getHours() * 60 +
+    new Date(weatherData.dailyData.sunset[0]).getMinutes();
+  console.log("sunset in minutes:", sunsetMinutes);
+
+  const sunriseMinutes =
+    new Date(weatherData.dailyData.sunrise[0]).getHours() * 60 +
+    new Date(weatherData.dailyData.sunrise[0]).getMinutes();
+  console.log("sunrise in minutes:", sunriseMinutes);
+
+  const minutesBetweenSunriseAndSunset = sunsetMinutes - sunriseMinutes;
+  console.log(
+    "minutes between sunrise and sunset",
+    minutesBetweenSunriseAndSunset
+  );
+
+  const currentHourMinutes =
+    new Date().getHours() * 60 + new Date().getMinutes();
+  console.log("current hour in minutes:", currentHourMinutes);
+
+  const minutesBetweenCurrentHourAndSunrise =
+    currentHourMinutes - sunriseMinutes;
+  console.log(
+    "minutes between current hour and sunrise:",
+    minutesBetweenCurrentHourAndSunrise
+  );
+
+  const currentSunPositionPercent =
+    (minutesBetweenSunriseAndSunset / minutesBetweenCurrentHourAndSunrise) *
+    100;
+  console.log("the percent:", currentSunPositionPercent);
+
   return (
     <main>
-      <h1>Thunder Buddy</h1>
-      <section>
+      <section className="temperature-main-container">
+        <h1>Thunder Buddy</h1>
         <section className="main-info-container">
-          <div className="temperature">
-            {weatherData.currentData.temperature_2m +
-              weatherData.currentUnitsData.temperature_2m}
-          </div>
-          <div className="time">
-            {weatherData.currentData.time.replace("T", " ")}
-          </div>
           <div>
-            <span>
-              {weatherDictionary[weatherData.currentData.weather_code].name}
-            </span>
-            <span>
-              {" "}
-              {weatherData.dailyData.temperature_2m_max[0] +
-                weatherData.dailyUnitsData.temperature_2m_max}
-              {" / "}
-              {weatherData.dailyData.temperature_2m_min[0] +
-                weatherData.dailyUnitsData.temperature_2m_min}
-            </span>
-          </div>
-          <div>
-            <span>
-              {`${deviceLocation.village}, ${deviceLocation.county}, ${deviceLocation.country}`}
-            </span>
+            <div className="temperature">
+              {weatherData.currentData.temperature_2m +
+                weatherData.currentUnitsData.temperature_2m}
+            </div>
+            <div className="time">
+              {dayName[new Date(weatherData.currentData.time).getDay()]}
+              {", "}
+              {new Date(weatherData.currentData.time).getDate()}{" "}
+              {monthName[new Date(weatherData.currentData.time).getMonth() + 1]}{" "}
+              {weatherData.currentData.time.slice(11, 16)}
+            </div>
+            <div>
+              <span>
+                {weatherDictionary[weatherData.currentData.weather_code].icon}
+              </span>
+              <span>
+                {" "}
+                {weatherData.dailyData.temperature_2m_max[0] +
+                  weatherData.dailyUnitsData.temperature_2m_max}
+                {" / "}
+                {weatherData.dailyData.temperature_2m_min[0] +
+                  weatherData.dailyUnitsData.temperature_2m_min}
+              </span>
+            </div>
+            <div>
+              <span>
+                {`${deviceLocation.locality}, ${deviceLocation.county}, ${deviceLocation.country}`}
+              </span>
+            </div>
           </div>
         </section>
 
@@ -329,222 +378,234 @@ export default function App() {
             })}
           </section>
         </section>
+      </section>
 
-        <section className="daily-container">
-          <table>
-            <tbody>
-              {weatherData.dailyData.time.slice(1, 6).map((date, index) => {
-                return (
-                  <tr key={date}>
-                    <td>
-                      {new Date(date).getDate()}{" "}
-                      {monthName[new Date(date).getMonth() + 1]}
-                    </td>
-                    <td>
-                      {
-                        weatherDictionary[
-                          weatherData.dailyData.weather_code[index]
-                        ].icon
-                      }
-                    </td>
-                    <td>
-                      {weatherData.dailyData.temperature_2m_max[index] +
-                        weatherData.dailyUnitsData.temperature_2m_max}
-                      {" / "}
-                      {weatherData.dailyData.temperature_2m_min[index] +
-                        weatherData.dailyUnitsData.temperature_2m_min}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </section>
+      <section className="daily-container">
+        <table>
+          <tbody>
+            {weatherData.dailyData.time.slice(1, 6).map((date, index) => {
+              return (
+                <tr key={date}>
+                  <td>
+                    {new Date(date).getDate()}{" "}
+                    {monthName[new Date(date).getMonth() + 1]}
+                  </td>
+                  <td>
+                    {
+                      weatherDictionary[
+                        weatherData.dailyData.weather_code[index]
+                      ].icon
+                    }
+                  </td>
+                  <td>
+                    {weatherData.dailyData.temperature_2m_max[index] +
+                      weatherData.dailyUnitsData.temperature_2m_max}
+                    {" / "}
+                    {weatherData.dailyData.temperature_2m_min[index] +
+                      weatherData.dailyUnitsData.temperature_2m_min}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </section>
 
-        <section className="additional-info">
+      <section className="additional-info">
+        <div>
+          <SunDim className="icon" />
+          <div>UV index</div>
           <div>
-            <SunDim />
-            <div>UV index</div>
-            <div>
-              {weatherData.dailyData.uv_index_max[0] +
-                weatherData.dailyUnitsData.uv_index_max}
-            </div>
+            {weatherData.dailyData.uv_index_max[0] +
+              weatherData.dailyUnitsData.uv_index_max}
           </div>
+        </div>
+        <div>
+          <Thermometer className="icon" />
+          <div>Feels like</div>
           <div>
-            <Thermometer />
-            <div>Feels like</div>
-            <div>
-              {weatherData.currentData.apparent_temperature +
-                weatherData.currentUnitsData.apparent_temperature}
-            </div>
+            {weatherData.currentData.apparent_temperature +
+              weatherData.currentUnitsData.apparent_temperature}
           </div>
+        </div>
+        <div>
+          <Droplet className="icon" />
+          <div>Humidity</div>
           <div>
-            <Droplet />
-            <div>Humidity</div>
-            <div>
-              {weatherData.currentData.relative_humidity_2m +
-                weatherData.currentUnitsData.relative_humidity_2m}
-            </div>
+            {weatherData.currentData.relative_humidity_2m +
+              weatherData.currentUnitsData.relative_humidity_2m}
           </div>
+        </div>
+        <div>
+          <Wind className="icon" />
+          <div>Wind speed</div>
           <div>
-            <Wind />
-            <div>Wind speed</div>
-            <div>
-              {weatherData.currentData.wind_speed_10m +
-                weatherData.currentUnitsData.wind_speed_10m}
-            </div>
+            {weatherData.currentData.wind_speed_10m +
+              weatherData.currentUnitsData.wind_speed_10m}
           </div>
+        </div>
+        <div>
+          <WindArrowDown className="icon" />
+          <div>Air pressure</div>
           <div>
-            <WindArrowDown />
-            <div>Air pressure</div>
-            <div>
-              {weatherData.currentData.pressure_msl +
-                weatherData.currentUnitsData.pressure_msl}
-            </div>
+            {weatherData.currentData.pressure_msl +
+              weatherData.currentUnitsData.pressure_msl}
           </div>
+        </div>
+        <div>
+          <Eye className="icon" />
+          <div>Visibility</div>
           <div>
-            <Eye />
-            <div>Visibility</div>
-            <div>
-              {weatherData.hourlyData.visibility[indexOfCurrentHour] / 1000 +
-                "km"}
-            </div>
+            {weatherData.hourlyData.visibility[indexOfCurrentHour] / 1000 +
+              "km"}
           </div>
-        </section>
-        <section className="sun-position-container">
+        </div>
+      </section>
+      <section className="sun-position-container">
+        <div className="sun-position-title">
           <div>
             <Sunrise />
             <div>Sunrise</div>
-            <div>{`${new Date(
-              weatherData.dailyData.sunrise[0]
-            ).getHours()}:${new Date(
-              weatherData.dailyData.sunrise[0]
-            ).getMinutes()}`}</div>
           </div>
           <div>
             <Sunset />
             <div>Sunset</div>
-            <div>{`${new Date(
-              weatherData.dailyData.sunset[0]
-            ).getHours()}:${new Date(
-              weatherData.dailyData.sunset[0]
-            ).getMinutes()}`}</div>
           </div>
-        </section>
-        <button onClick={handleShowDetails}>Show details</button>
-        {showDetails && (
-          <section className="details-menu-container">
-            {weatherData.dailyData.time.map((date) => {
-              return (
-                <div
-                  key={date}
-                  onClick={() => {
-                    setSpecificDateData(date);
-                  }}
-                >
-                  {new Date(date).getDate()}{" "}
-                  {monthName[new Date(date).getMonth() + 1]}
-                </div>
-              );
-            })}
-          </section>
-        )}
-        {showDetails && specificDateData !== null && (
-          <table className="details-table">
-            <thead>
-              <tr>
-                <th>Hour</th>
-                <th>Weather</th>
-                <th>Temp.</th>
-                <th>Apparent temp.</th>
-                <th>Rain</th>
-                <th>Showers</th>
-                <th>Snowfall</th>
-                <th>Relative humidity</th>
-                <th>Wind speed</th>
-                <th>Wind direction</th>
-                <th>Air pressure</th>
-                <th>Visibility</th>
-              </tr>
-            </thead>
-            <tbody>
-              {weatherData.hourlyData.time
-                .slice(
-                  selectedDateFirstHourIndex,
-                  selectedDateFirstHourIndex + 24
-                )
-                .map((time, index) => {
-                  return (
-                    <tr key={crypto.randomUUID()}>
-                      <td>{new Date(time).getHours()}</td>
-                      <td>
-                        {
-                          weatherDictionary[
-                            weatherData.hourlyData.weather_code[
-                              selectedDateFirstHourIndex + index
-                            ]
-                          ].icon
-                        }
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.temperature_2m[
-                          selectedDateFirstHourIndex + index
-                        ] + weatherData.hourlyUnitsData.temperature_2m}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.apparent_temperature[
-                          selectedDateFirstHourIndex + index
-                        ] + weatherData.hourlyUnitsData.apparent_temperature}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.rain[
-                          selectedDateFirstHourIndex + index
-                        ] + weatherData.hourlyUnitsData.rain}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.showers[
-                          selectedDateFirstHourIndex + index
-                        ] + weatherData.hourlyUnitsData.showers}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.snowfall[
-                          selectedDateFirstHourIndex + index
-                        ] + weatherData.hourlyUnitsData.snowfall}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.relative_humidity_2m[
-                          selectedDateFirstHourIndex + index
-                        ] + weatherData.hourlyUnitsData.relative_humidity_2m}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.wind_speed_10m[
-                          selectedDateFirstHourIndex + index
-                        ] + weatherData.hourlyUnitsData.wind_speed_10m}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.wind_direction_10m[
-                          selectedDateFirstHourIndex + index
-                        ] + weatherData.hourlyUnitsData.wind_direction_10m}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.pressure_msl[
-                          selectedDateFirstHourIndex + index
-                        ] + weatherData.hourlyUnitsData.pressure_msl}
-                      </td>
-                      <td>
-                        {weatherData.hourlyData.visibility[
-                          selectedDateFirstHourIndex + index
-                        ] /
-                          1000 +
-                          "km"}
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-        )}
+        </div>
+        <div className="sun-position-bar">
+          <div
+            className="progress-bar-white"
+            style={{ width: `${currentSunPositionPercent}%` }}
+          ></div>
+          <div className="progress-bar-grey"></div>
+        </div>
+        <div className="sun-position-hours">
+          <div>{`${new Date(
+            weatherData.dailyData.sunrise[0]
+          ).getHours()}:${new Date(
+            weatherData.dailyData.sunrise[0]
+          ).getMinutes()}`}</div>
+          <div>{`${new Date(
+            weatherData.dailyData.sunset[0]
+          ).getHours()}:${new Date(
+            weatherData.dailyData.sunset[0]
+          ).getMinutes()}`}</div>
+        </div>
       </section>
+
+      <button onClick={handleShowDetails}>Show details</button>
+      {showDetails && (
+        <section className="details-menu-container">
+          {weatherData.dailyData.time.map((date) => {
+            return (
+              <div
+                key={date}
+                onClick={() => {
+                  setSpecificDateData(date);
+                }}
+              >
+                {new Date(date).getDate()}{" "}
+                {monthName[new Date(date).getMonth() + 1]}
+              </div>
+            );
+          })}
+        </section>
+      )}
+      {showDetails && specificDateData !== null && (
+        <table className="details-table">
+          <thead>
+            <tr>
+              <th>Hour</th>
+              <th>Weather</th>
+              <th>Temp.</th>
+              <th>Apparent temp.</th>
+              <th>Rain</th>
+              <th>Showers</th>
+              <th>Snowfall</th>
+              <th>Relative humidity</th>
+              <th>Wind speed</th>
+              <th>Wind direction</th>
+              <th>Air pressure</th>
+              <th>Visibility</th>
+            </tr>
+          </thead>
+          <tbody>
+            {weatherData.hourlyData.time
+              .slice(
+                selectedDateFirstHourIndex,
+                selectedDateFirstHourIndex + 24
+              )
+              .map((time, index) => {
+                return (
+                  <tr key={crypto.randomUUID()}>
+                    <td>{new Date(time).getHours()}</td>
+                    <td>
+                      {
+                        weatherDictionary[
+                          weatherData.hourlyData.weather_code[
+                            selectedDateFirstHourIndex + index
+                          ]
+                        ].icon
+                      }
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.temperature_2m[
+                        selectedDateFirstHourIndex + index
+                      ] + weatherData.hourlyUnitsData.temperature_2m}
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.apparent_temperature[
+                        selectedDateFirstHourIndex + index
+                      ] + weatherData.hourlyUnitsData.apparent_temperature}
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.rain[
+                        selectedDateFirstHourIndex + index
+                      ] + weatherData.hourlyUnitsData.rain}
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.showers[
+                        selectedDateFirstHourIndex + index
+                      ] + weatherData.hourlyUnitsData.showers}
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.snowfall[
+                        selectedDateFirstHourIndex + index
+                      ] + weatherData.hourlyUnitsData.snowfall}
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.relative_humidity_2m[
+                        selectedDateFirstHourIndex + index
+                      ] + weatherData.hourlyUnitsData.relative_humidity_2m}
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.wind_speed_10m[
+                        selectedDateFirstHourIndex + index
+                      ] + weatherData.hourlyUnitsData.wind_speed_10m}
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.wind_direction_10m[
+                        selectedDateFirstHourIndex + index
+                      ] + weatherData.hourlyUnitsData.wind_direction_10m}
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.pressure_msl[
+                        selectedDateFirstHourIndex + index
+                      ] + weatherData.hourlyUnitsData.pressure_msl}
+                    </td>
+                    <td>
+                      {weatherData.hourlyData.visibility[
+                        selectedDateFirstHourIndex + index
+                      ] /
+                        1000 +
+                        "km"}
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+      )}
     </main>
   );
 }
