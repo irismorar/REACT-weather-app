@@ -24,6 +24,7 @@ import {
   WindArrowDown,
   Eye,
 } from "lucide-react";
+import { useWeatherData } from "./useWeartherData";
 
 const weatherDictionary = {
   0: {
@@ -156,16 +157,25 @@ const monthName = {
 };
 
 const dayName = {
+  0: "Sunday",
   1: "Monday",
   2: "Tuesday",
   3: "Wednesday",
   4: "Thursday",
   5: "Friday",
   6: "Saturday",
-  7: "Sunday",
 };
 
 export default function App() {
+  const [dataReadyState, dataError, wData] = useWeatherData();
+
+  console.log("data ready state:", dataReadyState);
+  console.log("data error:", dataError);
+  console.log("weather data:", wData);
+  console.log("------------------------------");
+
+  // ---------------------------------------------------------------------------
+
   const [weatherData, setWeatherData] = useState({});
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -183,7 +193,7 @@ export default function App() {
     }
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${currentPosition.latitude}&longitude=${currentPosition.longitude}&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility,relative_humidity_2m,apparent_temperature,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin`
+        `https://api.open-meteo.com/v1/forecast?latitude=${currentPosition.latitude}&longitude=${currentPosition.longitude}&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility,relative_humidity_2m,apparent_temperature,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin`,
       );
       const data = await response.json();
       setWeatherData({
@@ -194,7 +204,6 @@ export default function App() {
         hourlyData: data.hourly,
         hourlyUnitsData: data.hourly_units,
       });
-      console.log(data);
       setIsLoading(false);
     } catch (errorObject) {
       setError(`⚠️ Could not load weather data. ${errorObject.message}`);
@@ -212,7 +221,7 @@ export default function App() {
     }
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}&format=json`
+        `https://nominatim.openstreetmap.org/reverse?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}&format=json`,
       );
       const data = await response.json();
       setDeviceLocation({
@@ -251,9 +260,9 @@ export default function App() {
         });
       },
       (errorMessage) => {
-        console.log(errorMessage);
+        // console.log(errorMessage);
       },
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true },
     );
   }, []);
 
@@ -268,13 +277,13 @@ export default function App() {
   const indexOfCurrentHour = weatherData.hourlyData.time
     .slice(0, 24)
     .findIndex(
-      (itemIndex) => new Date().getHours() === new Date(itemIndex).getHours()
+      (itemIndex) => new Date().getHours() === new Date(itemIndex).getHours(),
     );
 
   const startIndex = indexOfCurrentHour !== -1 ? indexOfCurrentHour : 0;
   const next24Hours = weatherData.hourlyData.time.slice(
     startIndex,
-    startIndex + 24
+    startIndex + 24,
   );
 
   const handleShowDetails = () => {
@@ -284,40 +293,40 @@ export default function App() {
   const selectedDateFirstHourIndex = weatherData.hourlyData.time.findIndex(
     (date) => {
       return new Date(specificDateData).getDate() === new Date(date).getDate();
-    }
+    },
   );
 
   const sunsetMinutes =
     new Date(weatherData.dailyData.sunset[0]).getHours() * 60 +
     new Date(weatherData.dailyData.sunset[0]).getMinutes();
-  console.log("sunset in minutes:", sunsetMinutes);
+  // console.log("sunset in minutes:", sunsetMinutes);
 
   const sunriseMinutes =
     new Date(weatherData.dailyData.sunrise[0]).getHours() * 60 +
     new Date(weatherData.dailyData.sunrise[0]).getMinutes();
-  console.log("sunrise in minutes:", sunriseMinutes);
+  // console.log("sunrise in minutes:", sunriseMinutes);
 
   const minutesBetweenSunriseAndSunset = sunsetMinutes - sunriseMinutes;
-  console.log(
-    "minutes between sunrise and sunset",
-    minutesBetweenSunriseAndSunset
-  );
+  // console.log(
+  //   "minutes between sunrise and sunset",
+  //   minutesBetweenSunriseAndSunset,
+  // );
 
   const currentHourMinutes =
     new Date().getHours() * 60 + new Date().getMinutes();
-  console.log("current hour in minutes:", currentHourMinutes);
+  // console.log("current hour in minutes:", currentHourMinutes);
 
   const minutesBetweenCurrentHourAndSunrise =
     currentHourMinutes - sunriseMinutes;
-  console.log(
-    "minutes between current hour and sunrise:",
-    minutesBetweenCurrentHourAndSunrise
-  );
+  // console.log(
+  //   "minutes between current hour and sunrise:",
+  //   minutesBetweenCurrentHourAndSunrise,
+  // );
 
   const currentSunPositionPercent =
     (minutesBetweenSunriseAndSunset / minutesBetweenCurrentHourAndSunrise) *
     100;
-  console.log("the percent:", currentSunPositionPercent);
+  // console.log("the percent:", currentSunPositionPercent);
 
   return (
     <main>
@@ -481,14 +490,14 @@ export default function App() {
         </div>
         <div className="sun-position-hours">
           <div>{`${new Date(
-            weatherData.dailyData.sunrise[0]
+            weatherData.dailyData.sunrise[0],
           ).getHours()}:${new Date(
-            weatherData.dailyData.sunrise[0]
+            weatherData.dailyData.sunrise[0],
           ).getMinutes()}`}</div>
           <div>{`${new Date(
-            weatherData.dailyData.sunset[0]
+            weatherData.dailyData.sunset[0],
           ).getHours()}:${new Date(
-            weatherData.dailyData.sunset[0]
+            weatherData.dailyData.sunset[0],
           ).getMinutes()}`}</div>
         </div>
       </section>
@@ -533,7 +542,7 @@ export default function App() {
             {weatherData.hourlyData.time
               .slice(
                 selectedDateFirstHourIndex,
-                selectedDateFirstHourIndex + 24
+                selectedDateFirstHourIndex + 24,
               )
               .map((time, index) => {
                 return (

@@ -15,11 +15,11 @@ body {
   justify-content: center;
 }
 
-body[data-isday="true"]{
+body[data-isday="true"] {
   background: rgb(59, 92, 182);
 }
 
-body[data-isday="false"]{
+body[data-isday="false"] {
   background: rgb(15, 23, 47);
 }
 
@@ -52,14 +52,24 @@ h1 {
 }
 
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes scaleUp {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.1); }
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
 }
 
 .main-info-container {
@@ -147,7 +157,7 @@ h1 {
 }
 
 .additional-info div div:nth-child(2) {
-  opacity: .7;
+  opacity: 0.7;
   font-size: 1.4rem;
 }
 
@@ -183,7 +193,7 @@ h1 {
 }
 
 .sun-position-title > div > div:nth-child(2) {
-  opacity: .7;
+  opacity: 0.7;
   font-size: 1.4rem;
 }
 
@@ -194,17 +204,17 @@ h1 {
 
 .progress-bar-white {
   position: absolute;
-  height: .4rem;
+  height: 0.4rem;
   border-radius: 20px;
   background-color: #fff;
 }
 
 .progress-bar-grey {
-  height: .4rem;
+  height: 0.4rem;
   border-radius: 20px;
   background-color: #fff;
   width: 100%;
-  opacity: .4;
+  opacity: 0.4;
 }
 
 .sun-position-hours {
@@ -216,7 +226,7 @@ h1 {
 
 button {
   background-color: transparent;
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
 }
 
 button:hover {
@@ -242,18 +252,18 @@ button:hover {
 }
 
 .details-table th {
-  border: 1px solid hsla(0, 0%, 100%, .3);
-  color: hsla(0, 0%, 100%, .5);
+  border: 1px solid hsla(0, 0%, 100%, 0.3);
+  color: hsla(0, 0%, 100%, 0.5);
   font-size: 1.4rem;
 }
 
 .details-table td {
-  color: hsla(0, 0%, 100%, .3);
+  color: hsla(0, 0%, 100%, 0.3);
   font-size: 1.4rem;
 }
 
 .details-table > tbody > tr:hover {
-  background-color: hsla(0, 0%, 100%, .2);
+  background-color: hsla(0, 0%, 100%, 0.2);
 }
 
 .details-table > tbody > tr:hover td {
