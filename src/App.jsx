@@ -375,12 +375,13 @@ export default function App() {
                   <div>{time.slice(-5)}</div>
                   <div>
                     {
-                      weatherDictionary[weatherData.currentData.weather_code]
-                        .icon
+                      weatherDictionary[
+                        weatherData.hourlyData.weather_code[startIndex + index]
+                      ].icon
                     }
                   </div>
                   <div>
-                    {weatherData.hourlyData.temperature_2m[index] +
+                    {weatherData.hourlyData.temperature_2m[startIndex + index] +
                       weatherData.hourlyUnitsData.temperature_2m}
                   </div>
                 </div>
