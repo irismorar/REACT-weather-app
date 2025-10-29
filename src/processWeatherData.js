@@ -66,7 +66,7 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
       relative_humidity_2m: hourly_relative_humidity_2m,
       wind_speed_10m: hourly_wind_speed_10m,
       wind_direction_10m: hourly_wind_direction_10m,
-      pressure_msl: hourly_pressure_msl,
+      pressure_msl: hourly_air_pressure,
     },
     hourly_units: {
       visibility: visibility_unit,
@@ -115,9 +115,46 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
   const date_for_next_7_days = time_7_days.map((date) => {
     return {
       formattedDate: `${date.slice(-2)} ${monthName[Number(date.slice(5, 7))]}`,
-      unformattedDate: `${date}`,
+      unformattedDate: date,
     };
   });
+
+  const hourly_next_7_days = {};
+
+  for (
+    let daily_index = 0;
+    daily_index < date_for_next_7_days.length;
+    daily_index++
+  ) {
+    const startIndex = daily_index * 24;
+    const endIndex = startIndex + 23;
+    const hourly_current_day = [];
+
+    for (
+      let hourly_index = startIndex;
+      hourly_index <= endIndex;
+      hourly_index++
+    ) {
+      const current_hour = {
+        time: hourly_time[hourly_index].slice(-5),
+        weather_code: hourly_weather_code[hourly_index],
+        temperature: `${hourly_temperature_2m[hourly_index]}${temperature_2m_unit}`,
+        apparent_temperature: `${hourly_apparent_temperature[hourly_index]}${temperature_2m_unit}`,
+        rain: `${hourly_rain[hourly_index]}${rain_unit}`,
+        showers: `${hourly_showers[hourly_index]}${showers_unit}`,
+        snowfall: `${hourly_snowfall[hourly_index]}${snowfall_unit}`,
+        relative_humidity: `${hourly_relative_humidity_2m[hourly_index]}${relative_humidity_unit}`,
+        wind_speed: `${hourly_wind_speed_10m[hourly_index]}${wind_speed_10m_unit}`,
+        wind_direction: `${hourly_wind_direction_10m[hourly_index]}${wind_direction_10m_unit}`,
+        air_pressure: `${hourly_air_pressure[hourly_index]}${air_pressure_unit}`,
+        visibility: `${hourly_visibility[hourly_index]}${visibility_unit}`,
+      };
+      hourly_current_day.push(current_hour);
+    }
+
+    hourly_next_7_days[date_for_next_7_days[daily_index].unformattedDate] =
+      hourly_current_day;
+  }
 
   return {
     location: `${city || village}, ${county}, ${country}`,
@@ -139,5 +176,6 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
     dataForNext6Days: data_for_next_6_days,
     dataForNext24Hours: data_for_next_24_hours,
     dateForNext7Days: date_for_next_7_days,
+    hourlyNext7Days: hourly_next_7_days,
   };
 }
