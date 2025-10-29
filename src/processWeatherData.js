@@ -156,7 +156,7 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
       hourly_current_day;
   }
 
-  return {
+  const allProcessedData = {
     location: `${city || village}, ${county}, ${country}`,
     currentTemperature2m: `${current_temperature_2m}${temperature_2m_unit}`,
     currentApparentTemperature: `${current_apparent_temperature}${temperature_2m_unit}`,
@@ -178,4 +178,7 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
     dateForNext7Days: date_for_next_7_days,
     hourlyNext7Days: hourly_next_7_days,
   };
+  console.log(allProcessedData);
+
+  return allProcessedData;
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { processWeatherData } from "./processWeatherData";
 import { useWeatherData } from "./useWeartherData";
 import "./App.css";
 import {
@@ -168,7 +167,12 @@ const dayName = {
 };
 
 export default function App() {
-  const [dataReadyState, dataError, wData] = useWeatherData();
+  const [
+    dataReadyState,
+    dataError,
+    wData,
+    { showDetails, setShowDetails, showDetailsForDate, setShowDetailsForDate },
+  ] = useWeatherData();
 
   console.log("data ready state:", dataReadyState);
   console.log("data error:", dataError);
@@ -177,157 +181,143 @@ export default function App() {
 
   // ---------------------------------------------------------------------------
 
-  const [weatherData, setWeatherData] = useState({});
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showDetails, setShowDetails] = useState(false);
-  const [specificDateData, setSpecificDateData] = useState(null);
-  const [currentPosition, setCurrentPosition] = useState({});
-  const [deviceLocation, setDeviceLocation] = useState({});
+  // const [weatherData, setWeatherData] = useState({});
+  // const [error, setError] = useState(null);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [currentPosition, setCurrentPosition] = useState({});
+  // const [deviceLocation, setDeviceLocation] = useState({});
 
-  const fetchWeatherData = useCallback(async () => {
-    if (
-      currentPosition.latitude === undefined ||
-      currentPosition.longitude === undefined
-    ) {
-      return;
-    }
-    try {
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${currentPosition.latitude}&longitude=${currentPosition.longitude}&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility,relative_humidity_2m,apparent_temperature,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin`
-      );
-      const data = await response.json();
-      setWeatherData({
-        currentData: data.current,
-        currentUnitsData: data.current_units,
-        dailyData: data.daily,
-        dailyUnitsData: data.daily_units,
-        hourlyData: data.hourly,
-        hourlyUnitsData: data.hourly_units,
-      });
-      setIsLoading(false);
-    } catch (errorObject) {
-      setError(`⚠️ Could not load weather data. ${errorObject.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentPosition.latitude, currentPosition.longitude]);
+  // const fetchWeatherData = useCallback(async () => {
+  //   if (
+  //     currentPosition.latitude === undefined ||
+  //     currentPosition.longitude === undefined
+  //   ) {
+  //     return;
+  //   }
+  //   try {
+  //     const response = await fetch(
+  //       `https://api.open-meteo.com/v1/forecast?latitude=${currentPosition.latitude}&longitude=${currentPosition.longitude}&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,visibility,relative_humidity_2m,apparent_temperature,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&current=temperature_2m,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature,pressure_msl,weather_code&timezone=Europe%2FBerlin`
+  //     );
+  //     const data = await response.json();
+  //     setWeatherData({
+  //       currentData: data.current,
+  //       currentUnitsData: data.current_units,
+  //       dailyData: data.daily,
+  //       dailyUnitsData: data.daily_units,
+  //       hourlyData: data.hourly,
+  //       hourlyUnitsData: data.hourly_units,
+  //     });
+  //     setIsLoading(false);
+  //   } catch (errorObject) {
+  //     setError(`⚠️ Could not load weather data. ${errorObject.message}`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [currentPosition.latitude, currentPosition.longitude]);
 
-  const fetchLocation = useCallback(async () => {
-    if (
-      currentPosition.latitude === undefined ||
-      currentPosition.longitude === undefined
-    ) {
-      return;
-    }
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}&format=json`
-      );
-      const data = await response.json();
-      setDeviceLocation({
-        country: data.address.country,
-        county: data.address.county,
-        locality: data.address.village || data.address.city,
-      });
-    } catch (errorObj) {
-      setError(`⚠️ Could not load position data. ${errorObj.message}`);
-    }
-  }, [currentPosition.latitude, currentPosition.longitude]);
+  // const fetchLocation = useCallback(async () => {
+  //   if (
+  //     currentPosition.latitude === undefined ||
+  //     currentPosition.longitude === undefined
+  //   ) {
+  //     return;
+  //   }
+  //   try {
+  //     const response = await fetch(
+  //       `https://nominatim.openstreetmap.org/reverse?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}&format=json`
+  //     );
+  //     const data = await response.json();
+  //     setDeviceLocation({
+  //       country: data.address.country,
+  //       county: data.address.county,
+  //       locality: data.address.village || data.address.city,
+  //     });
+  //   } catch (errorObj) {
+  //     setError(`⚠️ Could not load position data. ${errorObj.message}`);
+  //   }
+  // }, [currentPosition.latitude, currentPosition.longitude]);
 
-  useEffect(() => {
-    fetchWeatherData();
-    fetchLocation();
-  }, [fetchWeatherData, fetchLocation]);
+  // useEffect(() => {
+  //   fetchWeatherData();
+  //   fetchLocation();
+  // }, [fetchWeatherData, fetchLocation]);
 
-  useEffect(() => {
-    if (weatherData.currentData?.is_day !== 0) {
-      document.body.setAttribute("data-isday", "true");
-    } else {
-      document.body.setAttribute("data-isday", "false");
-    }
+  // useEffect(() => {
+  //   navigator.geolocation.getCurrentPosition(
+  //     (position) => {
+  //       setCurrentPosition({
+  //         latitude: position.coords.latitude,
+  //         longitude: position.coords.longitude,
+  //       });
+  //     },
+  //     (errorMessage) => {
+  //       // console.log(errorMessage);
+  //     },
+  //     { enableHighAccuracy: true }
+  //   );
+  // }, []);
 
-    return () => {
-      document.body.removeAttribute("data-isday");
-    };
-  }, [weatherData.currentData?.is_day]);
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setCurrentPosition({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-      },
-      (errorMessage) => {
-        // console.log(errorMessage);
-      },
-      { enableHighAccuracy: true }
-    );
-  }, []);
-
-  if (isLoading) {
+  if (dataReadyState === "loading") {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>{error}</div>;
+  if (dataReadyState === "error") {
+    return <div>{dataError}</div>;
   }
 
-  const indexOfCurrentHour = weatherData.hourlyData.time
-    .slice(0, 24)
-    .findIndex(
-      (itemIndex) => new Date().getHours() === new Date(itemIndex).getHours()
-    );
+  // const indexOfCurrentHour = weatherData.hourlyData.time
+  //   .slice(0, 24)
+  //   .findIndex(
+  //     (itemIndex) => new Date().getHours() === new Date(itemIndex).getHours()
+  //   );
 
-  const startIndex = indexOfCurrentHour !== -1 ? indexOfCurrentHour : 0;
-  const next24Hours = weatherData.hourlyData.time.slice(
-    startIndex,
-    startIndex + 24
-  );
-
-  const handleShowDetails = () => {
-    setShowDetails((prev) => !prev);
-  };
-
-  const selectedDateFirstHourIndex = weatherData.hourlyData.time.findIndex(
-    (date) => {
-      return new Date(specificDateData).getDate() === new Date(date).getDate();
-    }
-  );
-
-  const sunsetMinutes =
-    new Date(weatherData.dailyData.sunset[0]).getHours() * 60 +
-    new Date(weatherData.dailyData.sunset[0]).getMinutes();
-  // console.log("sunset in minutes:", sunsetMinutes);
-
-  const sunriseMinutes =
-    new Date(weatherData.dailyData.sunrise[0]).getHours() * 60 +
-    new Date(weatherData.dailyData.sunrise[0]).getMinutes();
-  // console.log("sunrise in minutes:", sunriseMinutes);
-
-  const minutesBetweenSunriseAndSunset = sunsetMinutes - sunriseMinutes;
-  // console.log(
-  //   "minutes between sunrise and sunset",
-  //   minutesBetweenSunriseAndSunset,
+  // const startIndex = indexOfCurrentHour !== -1 ? indexOfCurrentHour : 0;
+  // const next24Hours = weatherData.hourlyData.time.slice(
+  //   startIndex,
+  //   startIndex + 24
   // );
 
-  const currentHourMinutes =
-    new Date().getHours() * 60 + new Date().getMinutes();
-  // console.log("current hour in minutes:", currentHourMinutes);
+  // const handleShowDetails = () => {
+  //   setShowDetails((prev) => !prev);
+  // };
 
-  const minutesBetweenCurrentHourAndSunrise =
-    currentHourMinutes - sunriseMinutes;
-  // console.log(
-  //   "minutes between current hour and sunrise:",
-  //   minutesBetweenCurrentHourAndSunrise,
+  // const selectedDateFirstHourIndex = weatherData.hourlyData.time.findIndex(
+  //   (date) => {
+  //     return new Date(specificDateData).getDate() === new Date(date).getDate();
+  //   }
   // );
 
-  const currentSunPositionPercent =
-    (minutesBetweenSunriseAndSunset / minutesBetweenCurrentHourAndSunrise) *
-    100;
-  // console.log("the percent:", currentSunPositionPercent);
+  // const sunsetMinutes =
+  //   new Date(weatherData.dailyData.sunset[0]).getHours() * 60 +
+  //   new Date(weatherData.dailyData.sunset[0]).getMinutes();
+  // // console.log("sunset in minutes:", sunsetMinutes);
+
+  // const sunriseMinutes =
+  //   new Date(weatherData.dailyData.sunrise[0]).getHours() * 60 +
+  //   new Date(weatherData.dailyData.sunrise[0]).getMinutes();
+  // // console.log("sunrise in minutes:", sunriseMinutes);
+
+  // const minutesBetweenSunriseAndSunset = sunsetMinutes - sunriseMinutes;
+  // // console.log(
+  // //   "minutes between sunrise and sunset",
+  // //   minutesBetweenSunriseAndSunset,
+  // // );
+
+  // const currentHourMinutes =
+  //   new Date().getHours() * 60 + new Date().getMinutes();
+  // // console.log("current hour in minutes:", currentHourMinutes);
+
+  // const minutesBetweenCurrentHourAndSunrise =
+  //   currentHourMinutes - sunriseMinutes;
+  // // console.log(
+  // //   "minutes between current hour and sunrise:",
+  // //   minutesBetweenCurrentHourAndSunrise,
+  // // );
+
+  // const currentSunPositionPercent =
+  //   (minutesBetweenSunriseAndSunset / minutesBetweenCurrentHourAndSunrise) *
+  //   100;
+  // // console.log("the percent:", currentSunPositionPercent);
 
   return (
     <main>
@@ -512,7 +502,7 @@ export default function App() {
               <div
                 key={date}
                 onClick={() => {
-                  setSpecificDateData(date);
+                  setShowDetailsForDate(date);
                 }}
               >
                 {new Date(date).getDate()}{" "}
@@ -522,7 +512,7 @@ export default function App() {
           })}
         </section>
       )}
-      {showDetails && specificDateData !== null && (
+      {showDetails && showDetailsForDate !== null && (
         <table className="details-table">
           <thead>
             <tr>
