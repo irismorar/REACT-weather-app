@@ -81,6 +81,7 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
     address: { city, village, county, country },
   } = reverseGeocodingJson;
 
+  const current_hour = current_time.slice(-5);
   const current_sunrise_hour = sunrise[0].slice(-5);
   const current_sunset_hour = sunset[0].slice(-5);
 
@@ -158,13 +159,14 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
 
   const allProcessedData = {
     location: `${city || village}, ${county}, ${country}`,
-    currentTemperature2m: `${current_temperature_2m}${temperature_2m_unit}`,
-    currentApparentTemperature: `${current_apparent_temperature}${temperature_2m_unit}`,
     isDay: is_day === 0 ? "night" : "day",
-    currentAirPressure: `${current_air_pressure}${air_pressure_unit}`,
-    currentRelativeHumidity: `${current_relative_humidity}${relative_humidity_unit}`,
     currentDate: date_for_next_7_days[0].formattedDate,
     currentDayName: `${dayName[new Date(current_time).getDay()]}`,
+    currentHour: current_hour,
+    currentTemperature2m: `${current_temperature_2m}${temperature_2m_unit}`,
+    currentApparentTemperature: `${current_apparent_temperature}${temperature_2m_unit}`,
+    currentAirPressure: `${current_air_pressure}${air_pressure_unit}`,
+    currentRelativeHumidity: `${current_relative_humidity}${relative_humidity_unit}`,
     currentWeatherCode: current_weather_code,
     currentWindSpeed: `${current_wind_speed_10m}${wind_speed_10m_unit}`,
     currentSunriseHour: current_sunrise_hour,
@@ -178,7 +180,7 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
     dateForNext7Days: date_for_next_7_days,
     hourlyNext7Days: hourly_next_7_days,
   };
-  console.log(allProcessedData);
+  console.log(allProcessedData, current_hour);
 
   return allProcessedData;
 }

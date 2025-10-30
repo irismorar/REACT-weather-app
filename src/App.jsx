@@ -2,8 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useWeatherData } from "./useWeartherData";
 import "./App.css";
 import {
-  Sunrise,
-  Sunset,
+  // Sunrise,
+  // Sunset,
   Sun,
   Cloud,
   CloudSun,
@@ -18,12 +18,12 @@ import {
   SunSnow,
   CloudLightning,
   Zap,
-  SunDim,
-  Droplet,
-  Thermometer,
-  Wind,
-  WindArrowDown,
-  Eye,
+  // SunDim,
+  // Droplet,
+  // Thermometer,
+  // Wind,
+  // WindArrowDown,
+  // Eye,
 } from "lucide-react";
 
 const weatherDictionary = {
@@ -141,42 +141,17 @@ const weatherDictionary = {
   },
 };
 
-const monthName = {
-  1: "January",
-  2: "February",
-  3: "March",
-  4: "April",
-  5: "May",
-  6: "June",
-  7: "July",
-  8: "August",
-  9: "September",
-  10: "October",
-  11: "November",
-  12: "December",
-};
-
-const dayName = {
-  0: "Sunday",
-  1: "Monday",
-  2: "Tuesday",
-  3: "Wednesday",
-  4: "Thursday",
-  5: "Friday",
-  6: "Saturday",
-};
-
 export default function App() {
   const [
     dataReadyState,
     dataError,
-    wData,
+    weatherData,
     { showDetails, setShowDetails, showDetailsForDate, setShowDetailsForDate },
   ] = useWeatherData();
 
   console.log("data ready state:", dataReadyState);
   console.log("data error:", dataError);
-  console.log("weather data:", wData);
+  console.log("weather data:", weatherData);
   console.log("------------------------------");
 
   // ---------------------------------------------------------------------------
@@ -326,54 +301,34 @@ export default function App() {
         <section className="main-info-container">
           <div>
             <div className="temperature">
-              {weatherData.currentData.temperature_2m +
-                weatherData.currentUnitsData.temperature_2m}
+              {weatherData.currentTemperature2m}
             </div>
-            <div className="time">
-              {dayName[new Date(weatherData.currentData.time).getDay()]}
-              {", "}
-              {new Date(weatherData.currentData.time).getDate()}{" "}
-              {monthName[new Date(weatherData.currentData.time).getMonth() + 1]}{" "}
-              {weatherData.currentData.time.slice(11, 16)}
-            </div>
+            <div className="time">{`${weatherData.currentDayName}, ${weatherData.currentDate} ${weatherData.currentHour}`}</div>
             <div>
               <span>
-                {weatherDictionary[weatherData.currentData.weather_code].icon}
+                {weatherDictionary[weatherData.currentWeatherCode].icon}
               </span>
               <span>
                 {" "}
-                {weatherData.dailyData.temperature_2m_max[0] +
-                  weatherData.dailyUnitsData.temperature_2m_max}
+                {weatherData.currentMaxTemp}
                 {" / "}
-                {weatherData.dailyData.temperature_2m_min[0] +
-                  weatherData.dailyUnitsData.temperature_2m_min}
+                {weatherData.currentMinTemp}
               </span>
             </div>
             <div>
-              <span>
-                {`${deviceLocation.locality}, ${deviceLocation.county}, ${deviceLocation.country}`}
-              </span>
+              <span>{weatherData.location}</span>
             </div>
           </div>
         </section>
 
         <section className="hourly-container">
           <section>
-            {next24Hours.map((time, index) => {
+            {weatherData.dataForNext24Hours.map((data) => {
               return (
-                <div className="hourly-data-container" key={time}>
-                  <div>{time.slice(-5)}</div>
-                  <div>
-                    {
-                      weatherDictionary[
-                        weatherData.hourlyData.weather_code[startIndex + index]
-                      ].icon
-                    }
-                  </div>
-                  <div>
-                    {weatherData.hourlyData.temperature_2m[startIndex + index] +
-                      weatherData.hourlyUnitsData.temperature_2m}
-                  </div>
+                <div className="hourly-data-container" key={data.time}>
+                  <div>{data.time}</div>
+                  <div>{weatherDictionary[data.weatherCode].icon}</div>
+                  <div>{data.temperature}</div>
                 </div>
               );
             })}
@@ -381,7 +336,7 @@ export default function App() {
         </section>
       </section>
 
-      <section className="daily-container">
+      {/* <section className="daily-container">
         <table>
           <tbody>
             {weatherData.dailyData.time.slice(1, 7).map((date, index) => {
@@ -607,6 +562,7 @@ export default function App() {
           </tbody>
         </table>
       )}
+         */}
     </main>
   );
 }

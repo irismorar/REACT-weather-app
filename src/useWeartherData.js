@@ -5,8 +5,8 @@ export function useWeatherData() {
   const [dataReadyState, setDataReadyState] = useState("loading"); // 'loading' | 'error' | 'ready'
   const [dataError, setDataError] = useState(""); // string
   const [weatherData, setWeatherData] = useState(null); // object | null
-  const [showDetails, setShowDetails] = useState(false);
-  const [showDetailsForDate, setShowDetailsForDate] = useState(null);
+  const [showDetails, setShowDetails] = useState(false); // true | false
+  const [showDetailsForDate, setShowDetailsForDate] = useState(null); // object | null
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -37,6 +37,8 @@ export function useWeatherData() {
         setWeatherData(
           processWeatherData(weatherDataJson, reverseGeocodingJson)
         );
+
+        setDataReadyState("ready");
       },
       (error) => {
         setDataError(`Could not get current lat/long. ${error.message}`);
@@ -46,7 +48,7 @@ export function useWeatherData() {
   }, []);
 
   useEffect(() => {
-    if (weatherData.currentData?.is_day !== 0) {
+    if (weatherData !== null && weatherData.isDay !== 0) {
       document.body.setAttribute("data-isday", "true");
     } else {
       document.body.setAttribute("data-isday", "false");
@@ -55,7 +57,7 @@ export function useWeatherData() {
     return () => {
       document.body.removeAttribute("data-isday");
     };
-  }, [weatherData.currentData?.is_day]);
+  }, [weatherData]);
 
   return [
     dataReadyState,
