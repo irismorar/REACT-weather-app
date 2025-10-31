@@ -180,7 +180,7 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
     dateForNext7Days: date_for_next_7_days,
     hourlyNext7Days: hourly_next_7_days,
   };
-  console.log(allProcessedData, current_hour);
+  console.log(allProcessedData);
 
   return allProcessedData;
 }

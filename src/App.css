@@ -25,6 +25,7 @@ body[data-isday="false"] {
 
 main {
   width: 60vw;
+  min-width: 300px;
 }
 
 .temperature-main-container {
@@ -131,8 +132,8 @@ h1 {
   width: 100%;
   text-align: center;
 }
+
 .additional-info {
-  border: 2px solid red;
   display: flex;
   align-items: center;
   justify-content: space-between;

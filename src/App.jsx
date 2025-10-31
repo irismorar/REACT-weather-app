@@ -1,9 +1,8 @@
-import { useEffect, useState, useCallback } from "react";
 import { useWeatherData } from "./useWeartherData";
 import "./App.css";
 import {
-  // Sunrise,
-  // Sunset,
+  Sunrise,
+  Sunset,
   Sun,
   Cloud,
   CloudSun,
@@ -18,12 +17,12 @@ import {
   SunSnow,
   CloudLightning,
   Zap,
-  // SunDim,
-  // Droplet,
-  // Thermometer,
-  // Wind,
-  // WindArrowDown,
-  // Eye,
+  SunDim,
+  Droplet,
+  Thermometer,
+  Wind,
+  WindArrowDown,
+  Eye,
 } from "lucide-react";
 
 const weatherDictionary = {
@@ -252,9 +251,9 @@ export default function App() {
   //   startIndex + 24
   // );
 
-  // const handleShowDetails = () => {
-  //   setShowDetails((prev) => !prev);
-  // };
+  const handleShowDetails = () => {
+    setShowDetails((prev) => !prev);
+  };
 
   // const selectedDateFirstHourIndex = weatherData.hourlyData.time.findIndex(
   //   (date) => {
@@ -336,29 +335,24 @@ export default function App() {
         </section>
       </section>
 
-      {/* <section className="daily-container">
+      <section className="daily-container">
         <table>
           <tbody>
-            {weatherData.dailyData.time.slice(1, 7).map((date, index) => {
+            {weatherData.dataForNext6Days.map((date, index) => {
               return (
-                <tr key={date}>
-                  <td>
-                    {new Date(date).getDate()}{" "}
-                    {monthName[new Date(date).getMonth() + 1]}
-                  </td>
+                <tr key={crypto.randomUUID()}>
+                  <td>{weatherData.dataForNext6Days[index].date}</td>
                   <td>
                     {
                       weatherDictionary[
-                        weatherData.dailyData.weather_code[index]
+                        weatherData.dataForNext6Days[index].weatherCode
                       ].icon
                     }
                   </td>
                   <td>
-                    {weatherData.dailyData.temperature_2m_max[index] +
-                      weatherData.dailyUnitsData.temperature_2m_max}
+                    {weatherData.dataForNext6Days[index].maxTemp}
                     {" / "}
-                    {weatherData.dailyData.temperature_2m_min[index] +
-                      weatherData.dailyUnitsData.temperature_2m_min}
+                    {weatherData.dataForNext6Days[index].minTemp}
                   </td>
                 </tr>
               );
@@ -371,52 +365,35 @@ export default function App() {
         <div>
           <SunDim className="icon" />
           <div>UV index</div>
-          <div>
-            {weatherData.dailyData.uv_index_max[0] +
-              weatherData.dailyUnitsData.uv_index_max}
-          </div>
+          <div>{weatherData.currentUVIndex}</div>
         </div>
         <div>
           <Thermometer className="icon" />
           <div>Feels like</div>
-          <div>
-            {weatherData.currentData.apparent_temperature +
-              weatherData.currentUnitsData.apparent_temperature}
-          </div>
+          <div>{weatherData.currentApparentTemperature}</div>
         </div>
         <div>
           <Droplet className="icon" />
           <div>Humidity</div>
-          <div>
-            {weatherData.currentData.relative_humidity_2m +
-              weatherData.currentUnitsData.relative_humidity_2m}
-          </div>
+          <div>{weatherData.currentRelativeHumidity}</div>
         </div>
         <div>
           <Wind className="icon" />
           <div>Wind speed</div>
-          <div>
-            {weatherData.currentData.wind_speed_10m +
-              weatherData.currentUnitsData.wind_speed_10m}
-          </div>
+          <div>{weatherData.currentWindSpeed}</div>
         </div>
         <div>
           <WindArrowDown className="icon" />
           <div>Air pressure</div>
-          <div>
-            {weatherData.currentData.pressure_msl +
-              weatherData.currentUnitsData.pressure_msl}
-          </div>
+          <div>{weatherData.currentAirPressure}</div>
         </div>
         <div>
           <Eye className="icon" />
           <div>Visibility</div>
-          <div>
-            {weatherData.hourlyData.visibility[indexOfCurrentHour] / 1000 +
-              "km"}
-          </div>
+          <div>{weatherData.currentVisibility}</div>
         </div>
       </section>
+
       <section className="sun-position-container">
         <div className="sun-position-title">
           <div>
@@ -431,42 +408,34 @@ export default function App() {
         <div className="sun-position-bar">
           <div
             className="progress-bar-white"
-            style={{ width: `${currentSunPositionPercent}%` }}
+            // style={{ width: `${currentSunPositionPercent}%` }}
           ></div>
           <div className="progress-bar-grey"></div>
         </div>
         <div className="sun-position-hours">
-          <div>{`${new Date(
-            weatherData.dailyData.sunrise[0]
-          ).getHours()}:${new Date(
-            weatherData.dailyData.sunrise[0]
-          ).getMinutes()}`}</div>
-          <div>{`${new Date(
-            weatherData.dailyData.sunset[0]
-          ).getHours()}:${new Date(
-            weatherData.dailyData.sunset[0]
-          ).getMinutes()}`}</div>
+          <div>{weatherData.currentSunriseHour}</div>
+          <div>{weatherData.currentSunsetHour}</div>
         </div>
       </section>
 
       <button onClick={handleShowDetails}>Show details</button>
       {showDetails && (
         <section className="details-menu-container">
-          {weatherData.dailyData.time.map((date) => {
+          {weatherData.dateForNext7Days.map((date) => {
             return (
               <div
-                key={date}
+                key={crypto.randomUUID()}
                 onClick={() => {
-                  setShowDetailsForDate(date);
+                  setShowDetailsForDate(date.unformattedDate);
                 }}
               >
-                {new Date(date).getDate()}{" "}
-                {monthName[new Date(date).getMonth() + 1]}
+                {date.formattedDate}
               </div>
             );
           })}
         </section>
       )}
+
       {showDetails && showDetailsForDate !== null && (
         <table className="details-table">
           <thead>
@@ -486,83 +455,29 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-            {weatherData.hourlyData.time
-              .slice(
-                selectedDateFirstHourIndex,
-                selectedDateFirstHourIndex + 24
-              )
-              .map((time, index) => {
+            {weatherData.dateForNext7Days.map(({ unformattedDay }) => {
+              weatherData.hourlyNext7Days[unformattedDay].map((hour) => {
                 return (
                   <tr key={crypto.randomUUID()}>
-                    <td>{new Date(time).getHours()}</td>
-                    <td>
-                      {
-                        weatherDictionary[
-                          weatherData.hourlyData.weather_code[
-                            selectedDateFirstHourIndex + index
-                          ]
-                        ].icon
-                      }
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.temperature_2m[
-                        selectedDateFirstHourIndex + index
-                      ] + weatherData.hourlyUnitsData.temperature_2m}
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.apparent_temperature[
-                        selectedDateFirstHourIndex + index
-                      ] + weatherData.hourlyUnitsData.apparent_temperature}
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.rain[
-                        selectedDateFirstHourIndex + index
-                      ] + weatherData.hourlyUnitsData.rain}
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.showers[
-                        selectedDateFirstHourIndex + index
-                      ] + weatherData.hourlyUnitsData.showers}
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.snowfall[
-                        selectedDateFirstHourIndex + index
-                      ] + weatherData.hourlyUnitsData.snowfall}
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.relative_humidity_2m[
-                        selectedDateFirstHourIndex + index
-                      ] + weatherData.hourlyUnitsData.relative_humidity_2m}
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.wind_speed_10m[
-                        selectedDateFirstHourIndex + index
-                      ] + weatherData.hourlyUnitsData.wind_speed_10m}
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.wind_direction_10m[
-                        selectedDateFirstHourIndex + index
-                      ] + weatherData.hourlyUnitsData.wind_direction_10m}
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.pressure_msl[
-                        selectedDateFirstHourIndex + index
-                      ] + weatherData.hourlyUnitsData.pressure_msl}
-                    </td>
-                    <td>
-                      {weatherData.hourlyData.visibility[
-                        selectedDateFirstHourIndex + index
-                      ] /
-                        1000 +
-                        "km"}
-                    </td>
+                    <td>{hour.time}</td>
+                    <td>{weatherDictionary[hour.weather_code].icon}</td>
+                    <td>{hour.temperature}</td>
+                    <td>{hour.apparent_temperature}</td>
+                    <td>{hour.rain}</td>
+                    <td>{hour.showers}</td>
+                    <td>{hour.snowfall}</td>
+                    <td>{hour.relative_humidity}</td>
+                    <td>{hour.wind_speed}</td>
+                    <td>{hour.wind_direction}</td>
+                    <td>{hour.air_pressure}</td>
+                    <td>{hour.visibility}</td>
                   </tr>
                 );
-              })}
+              });
+            })}
           </tbody>
         </table>
       )}
-         */}
     </main>
   );
 }
