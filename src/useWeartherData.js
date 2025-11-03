@@ -6,7 +6,7 @@ export function useWeatherData() {
   const [dataError, setDataError] = useState(""); // string
   const [weatherData, setWeatherData] = useState(null); // object | null
   const [showDetails, setShowDetails] = useState(false); // true | false
-  const [showDetailsForDate, setShowDetailsForDate] = useState(null); // object | null
+  const [selectedDate, setSelectedDate] = useState(null);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -63,6 +63,6 @@ export function useWeatherData() {
     dataReadyState,
     dataError,
     weatherData,
-    { showDetails, setShowDetails, showDetailsForDate, setShowDetailsForDate },
+    { showDetails, setShowDetails, selectedDate, setSelectedDate },
   ];
 }

@@ -69,7 +69,6 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
       pressure_msl: hourly_air_pressure,
     },
     hourly_units: {
-      visibility: visibility_unit,
       rain: rain_unit,
       showers: showers_unit,
       snowfall: snowfall_unit,
@@ -89,8 +88,8 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
     return {
       date: `${date.slice(-2)} ${monthName[Number(date.slice(5, 7))]}`,
       weatherCode: weather_code_7_days[index],
-      maxTemp: `${temperature_2m_max[index]}${temperature_2m_unit}`,
-      minTemp: `${temperature_2m_min[index]}${temperature_2m_unit}`,
+      maxTemp: `${temperature_2m_max[index]}${temperature_2m_unit[0]}`,
+      minTemp: `${temperature_2m_min[index]}${temperature_2m_unit[0]}`,
     };
   });
 
@@ -106,7 +105,7 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
       time: hour.slice(-5),
       weatherCode: hourly_weather_code[start_index + index],
       temperature:
-        hourly_temperature_2m[start_index + index] + temperature_2m_unit,
+        hourly_temperature_2m[start_index + index] + temperature_2m_unit[0],
     };
   });
 
@@ -139,8 +138,8 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
       const current_hour = {
         time: hourly_time[hourly_index].slice(-5),
         weather_code: hourly_weather_code[hourly_index],
-        temperature: `${hourly_temperature_2m[hourly_index]}${temperature_2m_unit}`,
-        apparent_temperature: `${hourly_apparent_temperature[hourly_index]}${temperature_2m_unit}`,
+        temperature: `${hourly_temperature_2m[hourly_index]}${temperature_2m_unit[0]}`,
+        apparent_temperature: `${hourly_apparent_temperature[hourly_index]}${temperature_2m_unit[0]}`,
         rain: `${hourly_rain[hourly_index]}${rain_unit}`,
         showers: `${hourly_showers[hourly_index]}${showers_unit}`,
         snowfall: `${hourly_snowfall[hourly_index]}${snowfall_unit}`,
@@ -148,7 +147,7 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
         wind_speed: `${hourly_wind_speed_10m[hourly_index]}${wind_speed_10m_unit}`,
         wind_direction: `${hourly_wind_direction_10m[hourly_index]}${wind_direction_10m_unit}`,
         air_pressure: `${hourly_air_pressure[hourly_index]}${air_pressure_unit}`,
-        visibility: `${hourly_visibility[hourly_index]}${visibility_unit}`,
+        visibility: `${hourly_visibility[hourly_index] / 1000} km`,
       };
       hourly_current_day.push(current_hour);
     }
@@ -164,7 +163,7 @@ export function processWeatherData(weatherDataJson, reverseGeocodingJson) {
     currentDayName: `${dayName[new Date(current_time).getDay()]}`,
     currentHour: current_hour,
     currentTemperature2m: `${current_temperature_2m}${temperature_2m_unit}`,
-    currentApparentTemperature: `${current_apparent_temperature}${temperature_2m_unit}`,
+    currentApparentTemperature: `${current_apparent_temperature}${temperature_2m_unit[0]}`,
     currentAirPressure: `${current_air_pressure}${air_pressure_unit}`,
     currentRelativeHumidity: `${current_relative_humidity}${relative_humidity_unit}`,
     currentWeatherCode: current_weather_code,
