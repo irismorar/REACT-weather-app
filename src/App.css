@@ -23,6 +23,10 @@ body[data-isday="false"] {
   background: rgb(15, 23, 47);
 }
 
+input, button {
+  font-family: inherit;
+}
+
 main {
   width: 60vw;
   min-width: 300px;
